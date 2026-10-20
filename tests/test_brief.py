@@ -17,7 +17,8 @@ QUIET = {part3.PYPROJECT_URL: "[project]\ndependencies = []\n",
          part3.NVD_URL: {"vulnerabilities": [], "totalResults": 0},
          part3.KEV_URL: {"vulnerabilities": []},
          part3.OSV_QUERY_URL: {"vulns": []},
-         part3.PYPI_URL: {"info": {"version": "1.0.0"}, "releases": {}}}
+         part3.PYPI_URL: {"info": {"version": "1.0.0"}, "releases": {}},
+         part3.GIT_UPLOAD_PACK_URL: "0000"}
 
 
 def nightly_catalogue():
@@ -88,6 +89,23 @@ class BriefTest(unittest.TestCase):
                                                 fetch_text=self.fetch, pause=lambda s: None)
         self.assertEqual(today, "2026-07-02")
         self.assertEqual(brief["date"], "2026-07-02")
+
+    def test_hermes_table_and_beyond_range_wording(self):
+        h = {"latest_release": "0.22.2", "latest_release_source": "GitHub release tag v0.22.2",
+             "pypi_latest": "0.19.0", "pypi_latest_date": "2026-07-20", "advisories_total": 2,
+             "minimum_version_clearing_fixed_advisories": "0.18.0",
+             "advisories": [
+                 {"id": "GHSA-f", "cve": "CVE-1", "status": "fixed", "affected": "< 0.18.0",
+                  "fixed_in": "0.18.0", "category": "CWE-74 (Injection)", "reach": "network",
+                  "impact_cia": "low/low/low", "severity": "LOW", "url": "u1"},
+                 {"id": "GHSA-o", "cve": "CVE-2", "status": "no_fix_named_latest_beyond_range",
+                  "affected": "<= 0.19.0", "fixed_in": None, "category": "CWE-400", "reach": "network",
+                  "impact_cia": "none/none/low", "severity": "MODERATE", "url": "u2"}]}
+        text = "\n".join(brief_mod.render_hermes_status(h))
+        self.assertIn("Latest hermes-agent release: 0.22.2 (GitHub release tag v0.22.2).", text)
+        self.assertIn("PyPI's newest release is 0.19.0", text)
+        self.assertIn("neither names it as affected nor confirms a fix", text)
+        self.assertIn("| [CVE-2](u2) | CWE-400 | network | none/none/low | Moderate | <= 0.19.0 | none named |", text)
 
     def test_markdown_renders_every_change_type(self):
         p1 = {"part": 1, "status": "ok", "checked_at_utc": "x", "compared_against": "y",

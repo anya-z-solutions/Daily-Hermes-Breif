@@ -65,6 +65,7 @@ class Sources:
         self.kev = []
         self.down = set()
         self.package_records = []  # every OSV record for hermes-agent (the standing section)
+        self.tags = ["v1.4.0", "v1.5.0"]
         self.pypi = {"info": {"version": "1.5.0"},
                      "releases": {"1.5.0": [{"upload_time_iso_8601": "2026-09-01T00:00:00Z"}]}}
 
@@ -90,6 +91,7 @@ class Sources:
             part3.KEV_URL: {"catalogVersion": "test", "vulnerabilities": self.kev},
             part3.OSV_QUERY_URL: {"vulns": self.package_records},
             part3.PYPI_URL: self.pypi,
+            part3.GIT_UPLOAD_PACK_URL: "".join(f"0040{'0' * 40} refs/tags/{t}\n" for t in self.tags) + "0000",
         }
         for vuln_id, record in self.osv_records.items():
             routes[part3.OSV_VULN_URL + vuln_id] = record
@@ -228,7 +230,8 @@ class StandingSectionsTest(unittest.TestCase):
         h = run(s)["hermes_status"]
         self.assertEqual(h["latest_release"], "1.5.0")
         self.assertEqual(h["advisories_total"], 3)
-        self.assertEqual(h["not_fixed_in_latest_release"], ["GHSA-o"])
+        self.assertEqual(h["no_fix_named_affecting_latest_release"], ["GHSA-o"])
+        self.assertEqual(next(a for a in h["advisories"] if a["id"] == "GHSA-o")["affected"], "<= 1.5.0")
         self.assertEqual(h["minimum_version_clearing_fixed_advisories"], "1.4.0")
         fixed = next(a for a in h["advisories"] if a["id"] == "GHSA-f")
         self.assertEqual(fixed["access_and_impact"],
@@ -236,6 +239,30 @@ class StandingSectionsTest(unittest.TestCase):
                          "user interaction none; confidentiality impact low; integrity impact low; "
                          "availability impact low")
         self.assertNotIn("crafted", str(h))
+
+    def test_github_release_beyond_named_range_is_stated_not_called_fixed(self):
+        # PyPI stopped at 1.5.0; GitHub has 1.7.0 and a canary and a calendar tag.
+        s = Sources()
+        s.tags = ["v1.5.0", "v1.7.0", "v1.7.1+canary.20261020T070000Z", "v2026.9.24"]
+        net = "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+        s.package_records = [with_vector(osv_record("GHSA-o", "2026-06-02T00:00:00Z"), net, last="1.5.0")]
+        h = run(s)["hermes_status"]
+        self.assertEqual(h["latest_release"], "1.7.0")
+        self.assertEqual(h["latest_release_source"], "GitHub release tag v1.7.0")
+        self.assertEqual(h["pypi_latest"], "1.5.0")
+        a = h["advisories"][0]
+        self.assertEqual(a["status"], "no_fix_named_latest_beyond_range")
+        self.assertEqual(a["reach"], "network, no login, no user action, low complexity")
+        self.assertEqual(a["impact_cia"], "none/none/low")
+        self.assertEqual(h["no_fix_named"], ["GHSA-o"])
+        self.assertEqual(h["no_fix_named_affecting_latest_release"], [])
+
+    def test_tags_unavailable_falls_back_to_pypi(self):
+        s = Sources()
+        s.down = {part3.GIT_UPLOAD_PACK_URL}
+        h = run(s)["hermes_status"]
+        self.assertEqual(h["latest_release"], "1.5.0")
+        self.assertEqual(h["latest_release_source"], "PyPI")
 
     def test_version_comparison_is_numeric(self):
         self.assertTrue(part3.version_key("0.18.0") > part3.version_key("0.9.0"))

@@ -14,6 +14,7 @@ structured vulnerability databases only:
   2. NVD, by publication date and a short list of AI and agent keywords.
   3. CVE.org records, to name the affected product and versions.
   4. CISA's Known Exploited Vulnerabilities list, for confirmed exploitation.
+  5. GitHub release tags and PyPI, for hermes-agent's latest release.
 
 Each finding is assembled from structured fields only (identifiers, product
 names, version ranges, CWE, CVSS, dates, URLs). Free-text descriptions and
@@ -57,6 +58,11 @@ KEV_URL = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulner
 NO_NEWS_TEXT = "No security news today."
 OSV_QUERY_URL = "https://api.osv.dev/v1/query"
 PYPI_URL = "https://pypi.org/pypi/hermes-agent/json"
+# Release tags, listed with git's protocol v2 and filtered to refs/tags/v: about 7 KB, where the
+# plain ref listing is about 10 MB. PyPI stopped at 0.19.0 while GitHub releases carried on.
+GIT_UPLOAD_PACK_URL = "https://github.com/NousResearch/hermes-agent.git/git-upload-pack"
+GIT_HEADERS = {"Git-Protocol": "version=2", "Content-Type": "application/x-git-upload-pack-request"}
+RELEASE_TAG = re.compile(r"refs/tags/v(\d{1,3}\.\d+\.\d+)\b(?![+\-.\w])")   # v0.22.2, not v2026.9.24 or canary
 TREND_KEYWORDS = ["prompt injection", "LLM", "AI agent", "Model Context Protocol"]
 TREND_WINDOW_DAYS = 30
 TREND_WINDOWS = 3
@@ -480,6 +486,15 @@ def version_key(version):
     return tuple(int(n) for n in re.findall(r"\d+", str(version)))
 
 
+REACH_WORDS = {
+    "AV": {"N": "network", "A": "adjacent network", "L": "local access", "P": "physical access"},
+    "PR": {"N": "no login", "L": "low-privilege login", "H": "high-privilege login"},
+    "UI": {"N": "no user action", "R": "user action needed", "P": "passive user action",
+           "A": "active user action"},
+    "AC": {"L": "low complexity", "H": "high complexity"},
+}
+IMPACT_LETTERS = {"H": "high", "L": "low", "N": "none"}
+
 CVSS_TERMS = [
     (("AV",), "attack vector", {"N": "network", "A": "adjacent network", "L": "local", "P": "physical"}),
     (("AC",), "complexity", {"L": "low", "H": "high"}),
@@ -502,6 +517,52 @@ def describe_cvss(vector):
         if value in values:
             words.append(f"{label} {values[value]}")
     return "; ".join(words) or None
+
+
+def cvss_metrics(vector):
+    if not vector:
+        return {}
+    return dict(part.split(":", 1) for part in vector.split("/")[1:] if ":" in part)
+
+
+def reach_text(vector):
+    """How the flaw is reached, e.g. 'network, no login, no user action, low complexity'."""
+    m = cvss_metrics(vector)
+    words = [REACH_WORDS[k][m[k]] for k in ("AV", "PR", "UI", "AC") if m.get(k) in REACH_WORDS[k]]
+    return ", ".join(words) or None
+
+
+def impact_text(vector):
+    """Confidentiality/integrity/availability impact, e.g. 'none/none/low'."""
+    m = cvss_metrics(vector)
+    values = [IMPACT_LETTERS.get(m.get(a) or m.get(b)) for a, b in (("C", "VC"), ("I", "VI"), ("A", "VA"))]
+    return "/".join(values) if all(values) else None
+
+
+def affected_text(spans):
+    """The affected range in comparison form: '< 0.18.0', '<= 0.19.0', '>= 0.5.0, < 0.9.0'."""
+    parts = []
+    for start, fixed, last in spans:
+        low = f">= {start}, " if start not in ("0", None) else ""
+        if fixed:
+            parts.append(f"{low}< {fixed}")
+        elif last:
+            parts.append(f"{low}<= {last}")
+        else:
+            parts.append(f"{low.rstrip(', ')}" if low else "all versions")
+    return "; ".join(parts) or "not stated"
+
+
+def latest_release_tag(fetch_text):
+    """Highest stable vX.Y.Z tag on GitHub. Raises FetchFailure."""
+    def pkt(line):
+        return f"{len(line) + 4:04x}{line}"
+    body = (pkt("command=ls-refs\n") + "0001" + pkt("ref-prefix refs/tags/v\n") + "0000").encode()
+    text = fetch_text(GIT_UPLOAD_PACK_URL, data=body, headers=GIT_HEADERS)
+    versions = RELEASE_TAG.findall(text or "")
+    if not versions:
+        raise FetchFailure("no release tags found")
+    return max(versions, key=version_key)
 
 
 def osv_vector(record):
@@ -566,7 +627,7 @@ def dedupe_osv(records):
     return kept
 
 
-def hermes_status(fetch_json, notes, sources):
+def hermes_status(fetch_json, fetch_text, notes, sources):
     """Latest release, every known advisory, which are fixed, and the version that clears them."""
     try:
         records = dedupe_osv(fetch_osv_package(fetch_json))
@@ -576,16 +637,24 @@ def hermes_status(fetch_json, notes, sources):
         sources.append({"source": "OSV hermes-agent advisories", "status": "failed"})
         return None
 
-    latest = latest_date = None
+    github_latest = pypi_latest = pypi_date = None
+    try:
+        github_latest = latest_release_tag(fetch_text)
+        sources.append({"source": "GitHub release tags", "status": "ok"})
+    except FetchFailure as e:
+        notes.append(f"hermes-agent's release tags could not be read from GitHub: {e}.")
+        sources.append({"source": "GitHub release tags", "status": "failed"})
     try:
         pypi = fetch_json(PYPI_URL)
-        latest = (pypi.get("info") or {}).get("version")
-        files = (pypi.get("releases") or {}).get(latest) or []
-        latest_date = (files[0].get("upload_time_iso_8601") or "")[:10] if files else None
+        pypi_latest = (pypi.get("info") or {}).get("version")
+        files = (pypi.get("releases") or {}).get(pypi_latest) or []
+        pypi_date = (files[0].get("upload_time_iso_8601") or "")[:10] if files else None
         sources.append({"source": "PyPI", "status": "ok"})
     except (FetchFailure, AttributeError) as e:
-        notes.append(f"The latest hermes-agent release could not be read from PyPI: {e}.")
+        notes.append(f"hermes-agent's newest PyPI release could not be read: {e}.")
         sources.append({"source": "PyPI", "status": "failed"})
+    candidates = [v for v in (github_latest, pypi_latest) if v]
+    latest = max(candidates, key=version_key) if candidates else None
 
     advisories = []
     for r in records:
@@ -595,8 +664,21 @@ def hermes_status(fetch_json, notes, sources):
         last = sorted({l for _, _, l in spans if l}, key=version_key)
         aliases = [a for a in r.get("aliases") or [] if isinstance(a, str)]
         cwe = [c for c in db.get("cwe_ids") or [] if isinstance(c, str)]
+        if fixed:
+            status = "fixed"
+        elif latest is None:
+            status = "no_fix_named"
+        elif affects(spans, latest):
+            status = "no_fix_named_affects_latest"
+        else:
+            status = "no_fix_named_latest_beyond_range"
+        vector = osv_vector(r)
         advisories.append({
             "id": r["id"],
+            "status": status,
+            "affected": affected_text(spans),
+            "reach": reach_text(vector),
+            "impact_cia": impact_text(vector),
             "cve": next((a for a in aliases if a.startswith("CVE-")), None),
             "cwe": cwe,
             "category": ", ".join(f"{c} ({CWE_NAMES[c]})" if c in CWE_NAMES else c for c in cwe)
@@ -615,9 +697,15 @@ def hermes_status(fetch_json, notes, sources):
     return {
         "package": HERMES_PACKAGE,
         "latest_release": latest,
-        "latest_release_date": latest_date,
+        "latest_release_source": ("GitHub release tag v" + latest if latest and latest == github_latest
+                                  else "PyPI" if latest else None),
+        "pypi_latest": pypi_latest,
+        "pypi_latest_date": pypi_date,
         "advisories_total": len(advisories),
-        "not_fixed_in_latest_release": [a["id"] for a in advisories if a["affects_latest_release"]],
+        "fixed": [a["id"] for a in advisories if a["status"] == "fixed"],
+        "no_fix_named": [a["id"] for a in advisories if a["status"] != "fixed"],
+        "no_fix_named_affecting_latest_release": [a["id"] for a in advisories
+                                                  if a["status"] == "no_fix_named_affects_latest"],
         "minimum_version_clearing_fixed_advisories": max(fixed_versions, key=version_key) if fixed_versions else None,
         "advisories": advisories,
     }
@@ -758,7 +846,7 @@ def run(already_reported, now=None, fetch_json=get_json, fetch_text=get_text, pa
             enrich_from_cve_org(c, fetch_json, notes)
     chosen = sorted(chosen, key=rank_key)      # enrichment can change scope or severity
 
-    result["hermes_status"] = hermes_status(fetch_json, notes, sources)
+    result["hermes_status"] = hermes_status(fetch_json, fetch_text, notes, sources)
     result["threat_picture"] = {
         "nvd_cves_published": nvd_trend(now, fetch_json, pause, notes, sources),
         "exploited_ai_software": kev_ai_summary(kev_entries, now),

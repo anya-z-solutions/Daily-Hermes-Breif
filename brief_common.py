@@ -66,7 +66,9 @@ def _request(url, data=None, timeout=DEFAULT_TIMEOUT, retry_wait=10, headers=Non
     all_headers = {"User-Agent": USER_AGENT}
     if headers:
         all_headers.update(headers)
-    if data is not None:
+    if isinstance(data, bytes):                        # raw body, caller sets Content-Type
+        body = data
+    elif data is not None:
         body = json.dumps(data).encode("utf-8")
         all_headers["Content-Type"] = "application/json"
     for attempt in (1, 2):
@@ -91,8 +93,8 @@ def _request(url, data=None, timeout=DEFAULT_TIMEOUT, retry_wait=10, headers=Non
     raise FetchFailure("rate limited (HTTP 429) after retry")
 
 
-def get_text(url, data=None, timeout=DEFAULT_TIMEOUT, retry_wait=10):
-    return _request(url, data=data, timeout=timeout, retry_wait=retry_wait)
+def get_text(url, data=None, timeout=DEFAULT_TIMEOUT, retry_wait=10, headers=None):
+    return _request(url, data=data, timeout=timeout, retry_wait=retry_wait, headers=headers)
 
 
 def get_json(url, data=None, timeout=DEFAULT_TIMEOUT, retry_wait=10):

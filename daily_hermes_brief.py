@@ -256,36 +256,45 @@ def render_hermes_status(h):
     lines = ["### Hermes Agent security status", ""]
     if not h:
         return lines + ["Not available tonight (see notes).", ""]
-    latest = (f"{h['latest_release']} ({h['latest_release_date'] or 'date not stated'})"
-              if h["latest_release"] else "unknown (PyPI could not be read)")
-    open_ids = h["not_fixed_in_latest_release"]
-    lines += [f"Latest hermes-agent release on PyPI: {latest}. Known advisories (OSV, duplicates "
-              f"merged): {h['advisories_total']}. Not fixed in the latest release: {len(open_ids)}.", ""]
-    if h["minimum_version_clearing_fixed_advisories"]:
-        fixed_count = sum(1 for a in h["advisories"] if a["fixed_in"])
-        lines += [f"Update to {h['minimum_version_clearing_fixed_advisories']} or later to clear the "
-                  f"{fixed_count} advisories that have a fixed release. Each line gives the version "
-                  f"that fixes it, so any installed version below that is affected.", ""]
+    latest = h["latest_release"]
+    if latest:
+        source = h["latest_release_source"] or "source not stated"
+        lines.append(f"Latest hermes-agent release: {latest} ({source}).")
+    else:
+        lines.append("Latest hermes-agent release: unknown (GitHub and PyPI could not be read).")
+    if h.get("pypi_latest") and h["pypi_latest"] != latest:
+        lines.append(f"PyPI's newest release is {h['pypi_latest']} ({h['pypi_latest_date'] or 'date not stated'}); "
+                     f"later releases are on GitHub only.")
+    lines.append("")
 
-    def line(a):
-        ids = a["id"] + (f" ({a['cve']})" if a["cve"] else "")
-        if a["fixed_in"]:
-            status = f"Fixed in {a['fixed_in']}"
-        elif a["last_affected"]:
-            status = f"No fixed release; affects versions up to {a['last_affected']} inclusive"
-        else:
-            status = "No fixed release stated"
-        return (f"- {status}: {ids}. {a['category']}. Severity {(a['severity'] or 'not rated').title()}. "
-                f"{(a['access_and_impact'] or 'No CVSS vector').capitalize()}. "
-                f"Published {a['published'] or 'date not stated'}. {a['url']}")
-
-    unfixed = [a for a in h["advisories"] if a["affects_latest_release"]]
-    fixed = [a for a in h["advisories"] if not a["affects_latest_release"]]
-    if unfixed:
-        lines += ["Affecting the latest release:", ""] + [line(a) for a in unfixed] + [""]
+    advisories = h["advisories"]
+    fixed = [a for a in advisories if a["status"] == "fixed"]
+    open_ = [a for a in advisories if a["status"] != "fixed"]
+    lines.append(f"Known advisories (OSV, duplicates merged): {h['advisories_total']}.")
     if fixed:
-        lines += ["Fixed in a released version:", ""] + [line(a) for a in fixed] + [""]
-    return lines
+        top = h["minimum_version_clearing_fixed_advisories"]
+        lines.append(f"- {len(fixed)} name a fixed version. The highest is {top}: "
+                     f"version {top} and later are outside all {len(fixed)}.")
+    for a in open_:
+        name = a["cve"] or a["id"]
+        if a["status"] == "no_fix_named_latest_beyond_range":
+            lines.append(f"- {name} names no fixed version. It lists {a['affected']} as affected. "
+                         f"The latest release, {latest}, is above that range: the advisory neither "
+                         f"names it as affected nor confirms a fix.")
+        elif a["status"] == "no_fix_named_affects_latest":
+            lines.append(f"- {name} names no fixed version and lists the latest release, {latest}, "
+                         f"as affected ({a['affected']}).")
+        else:
+            lines.append(f"- {name} names no fixed version. It lists {a['affected']} as affected.")
+    lines += ["", "To check an installation, compare its version with the Affected column.", "",
+              "| Advisory | Flaw | Reached by | Impact (C/I/A) | Severity | Affected | Fixed in |",
+              "|---|---|---|---|---|---|---|"]
+    for a in open_ + fixed:
+        ident = f"[{a['cve'] or a['id']}]({a['url']})"
+        lines.append(f"| {ident} | {a['category']} | {a['reach'] or 'not stated'} | "
+                     f"{a['impact_cia'] or 'not stated'} | {(a['severity'] or 'not rated').title()} | "
+                     f"{a['affected']} | {a['fixed_in'] or 'none named'} |")
+    return lines + [""]
 
 
 def render_threat_picture(t):

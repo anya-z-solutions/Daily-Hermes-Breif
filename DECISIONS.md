@@ -81,6 +81,16 @@ No source is searched for news articles. Finding articles needs web search and a
 
 What the measures showed on 2026-10-20: CVEs mentioning prompt injection rose from 14 to 24 between the last two 30-day windows (+71%), and those mentioning Model Context Protocol from 11 to 30 to 43 across three. Twelve entries on CISA's exploited list are AI or agent software; none of its 1,748 entries is classed as prompt injection, and every recent AI entry is a conventional flaw such as missing authentication, code injection or server-side request forgery. The brief reports these figures without interpreting them.
 
+## Hermes Agent status made readable, 2026-10-20
+
+The owner's agent, running hermes-agent 0.21.5, reported that the status section was hard to read: two advisories were shown as "no fixed release, affects versions up to 0.19.0" under the heading "Affecting the latest release", and the latest release was given as 0.19.0. It could tell it was beyond the named versions but not what that meant.
+
+Two faults sat behind that. First, the latest release came from PyPI, which stopped at 0.19.0 on 2026-07-20; GitHub releases carried on (`v0.22.2` on 2026-10-20, and tag `v2026.9.24` is package version 0.21.5). The latest release is now the highest stable `vX.Y.Z` tag on GitHub. Calendar tags (`v2026.9.24`) and canary builds (`+canary...`) are ignored. The plain git ref listing is about 10 MB because it includes every pull request, so the brief asks for tags only using git's protocol v2 `ls-refs` with a `refs/tags/v` prefix, which returns about 7 KB. PyPI's newest version is still reported, as a fact, and is the fallback if GitHub can't be read.
+
+Second, an advisory with no fixed version was treated as either affecting the latest release or not, and "not" was filed under fixed. There are now three states: fixed; no fix named and the latest release is within the affected range; no fix named and the latest release is beyond it. The last is worded exactly as the data supports: the advisory neither names that release as affected nor confirms a fix. That is the uncertainty the agent described, now stated for it rather than left for it to work out.
+
+The list became a summary and a table. The summary gives the counts and one sentence per unfixed advisory; the table gives one row per advisory with the affected range in comparison form (`< 0.18.0`, `<= 0.19.0`) so an agent can compare its own version directly. How a flaw is reached and its impact are split into short columns ("network, no login, no user action, low complexity" and "none/none/low") rather than one long sentence. The table is also fewer tokens than the previous list.
+
 ## Other decisions made while building
 
 **Part 1 bugs fixed.** When a new model's `:free` variant came before the base model in the catalogue, the new-model record used the variant and reported a price of zero. It now uses the base ID. Entries such as `~anthropic/claude-opus-latest` are floating pointers to another model; they were counted as new models and could have been featured, and now they are not. A variant repeating its base model's expiry change is no longer reported twice. Dropped connections and similar network errors used to crash the run; they now count as a failed fetch. The new-model record now carries the list price, which Part 2's tie rule needs.

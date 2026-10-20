@@ -19,7 +19,7 @@ class FakeFetch:
         self.default = default
         self.calls = []
 
-    def __call__(self, url, data=None, timeout=None, retry_wait=None):
+    def __call__(self, url, data=None, timeout=None, retry_wait=None, headers=None):
         self.calls.append(url)
         matches = [p for p in self.routes if url.startswith(p)]
         if matches:
