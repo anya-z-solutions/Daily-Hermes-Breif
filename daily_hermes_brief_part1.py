@@ -20,7 +20,7 @@ import json
 import sys
 from pathlib import Path
 
-from brief_common import FetchFailure, get_json, iso, now_utc, per_million
+from brief_common import FetchFailure, brief_date, get_json, iso, now_utc, per_million
 
 # --- Configuration ---------------------------------------------------------
 
@@ -254,7 +254,7 @@ def expiry_rollcall(models):
 
 # --- Main ------------------------------------------------------------------
 
-def run(snapshot_dir, raw=None, checked_at=None):
+def run(snapshot_dir, raw=None, checked_at=None, today=None):
     """
     Build Part 1. Returns (result, raw_to_save, today).
 
@@ -262,7 +262,7 @@ def run(snapshot_dir, raw=None, checked_at=None):
     tonight's fetch must not become one. Pass raw to skip the network (tests).
     """
     checked_at = checked_at or now_utc()
-    today = checked_at.strftime("%Y-%m-%d")
+    today = today or brief_date(checked_at)
     result = {
         "part": 1,
         "title": "Nous Portal model catalogue changes",

@@ -24,7 +24,7 @@ The run happens in a fresh cloud session each night, which starts with an empty 
 
 Claude runs and publishes the brief for now, via a nightly Claude scheduled task that runs `publish_brief.py`. The script checks out `briefs` in a temporary worktree, runs the brief against it, commits only the new dated files and pushes, retrying with backoff. If tonight's brief already exists it does nothing, so a repeated or overlapping run is harmless. If a push fails, the local commit is kept and goes out with the next successful push.
 
-The schedule is 01:07 Europe/London. A few minutes past the hour avoids the busiest scheduling minute, and the UTC date at that time is always the brief's date, in both GMT and BST.
+The schedule is 00:00 Europe/London, as the owner asked on 2026-10-20 (it was 01:07). In BST midnight in London is 23:00 UTC on the previous day, so a brief dated by UTC would carry yesterday's date and collide with the brief already written for it. Briefs and snapshots are therefore dated by UK calendar date, with every time still given in UTC. If the system has no time zone data the date falls back to UTC.
 
 ## The SPEC's open decisions
 
@@ -68,6 +68,18 @@ One file means one read for the agent, and a brief that is either fully there or
 ### 7. Failure behaviour
 
 Every fetch has a timeout and one retry on HTTP 429. A source that fails becomes a note in the brief, and the part carries on with what it has. A part that fails completely is marked `skipped`, `failed` or `error` and the other parts are still written. Part 2 is skipped whenever Part 1's catalogue is unusable, rather than choosing from a partial list. An existing brief is never overwritten. Publishing retries the push four times, then stops and reports the failure. Nothing waits indefinitely.
+
+## Part 3's purpose, refined on 2026-10-20
+
+The owner clarified that Part 3 is there to give an agent the evolving threat picture for Hermes setups, so it can judge its own security posture. For example: is prompt injection against agents happening, or still mostly theoretical? Individual advisories alone don't answer that, and the "never repeat" rule meant an agent reading only the newest brief never learnt about older advisories. Two standing sections were added, repeated every night, and the daily advisories kept below them.
+
+**Hermes Agent security status.** One OSV request returns every advisory for hermes-agent and one PyPI request gives the latest release, so the brief can say which advisories affect the version an agent is likely to run, and which version to update to and why. OSV lists each advisory twice (GHSA and PYSEC); they are merged, preferring the GitHub record. On 2026-10-20 that gives 10 advisories, not 20; an earlier count in this project's notes double-counted them. Technical detail is given as the CWE category and the CVSS vector in plain words (attack vector, complexity, privileges, user interaction, impact). That says what kind of flaw it is and how it can be reached without describing how to exploit it, which keeps to the rule against exploit mechanics.
+
+**Threat picture, measured.** The owner asked for "more often" and "growing concern" to be quantified and checkable. Each keyword gets CVE counts for three consecutive 30-day windows of whole UTC days and the percentage change on the previous window, with the exact NVD API query for the newest count; opening it returns `totalResults`, which matches the brief. Exploitation is measured from CISA's list: the number of AI and agent products on it, how many were added in the last 90 days against the 90 before, and how many entries are classed CWE-1427 (prompt injection). Matching uses a fixed list of AI product names, so the count is a floor and the brief says so. Each recent entry carries the vendor reference CISA gives.
+
+No source is searched for news articles. Finding articles needs web search and a model to read them, both cut for cost and reliability; the check links and vendor references let a person verify every figure instead. The extra requests are 12 small NVD counts (one result per page), one OSV query and one PyPI request, which add about a minute to the run because of NVD's rate limit, and no tokens.
+
+What the measures showed on 2026-10-20: CVEs mentioning prompt injection rose from 14 to 24 between the last two 30-day windows (+71%), and those mentioning Model Context Protocol from 11 to 30 to 43 across three. Twelve entries on CISA's exploited list are AI or agent software; none of its 1,748 entries is classed as prompt injection, and every recent AI entry is a conventional flaw such as missing authentication, code injection or server-side request forgery. The brief reports these figures without interpreting them.
 
 ## Other decisions made while building
 

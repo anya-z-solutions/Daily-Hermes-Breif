@@ -64,6 +64,9 @@ class Sources:
         self.cve_org = {}
         self.kev = []
         self.down = set()
+        self.package_records = []  # every OSV record for hermes-agent (the standing section)
+        self.pypi = {"info": {"version": "1.5.0"},
+                     "releases": {"1.5.0": [{"upload_time_iso_8601": "2026-09-01T00:00:00Z"}]}}
 
     def add_osv(self, record, package="hermes-agent"):
         self.osv_ids.setdefault(package, []).append({"id": record["id"], "modified": record["modified"]})
@@ -77,14 +80,16 @@ class Sources:
         def nvd(url, data):
             for keyword, items in self.nvd.items():
                 if "keywordSearch=" + keyword.replace(" ", "%20") + "&" in url:
-                    return {"vulnerabilities": items}
-            return {"vulnerabilities": []}
+                    return {"vulnerabilities": items, "totalResults": len(items)}
+            return {"vulnerabilities": [], "totalResults": 0}
 
         routes = {
             part3.PYPROJECT_URL: PYPROJECT,
             part3.OSV_BATCH_URL: batch,
             part3.NVD_URL: nvd,
             part3.KEV_URL: {"catalogVersion": "test", "vulnerabilities": self.kev},
+            part3.OSV_QUERY_URL: {"vulns": self.package_records},
+            part3.PYPI_URL: self.pypi,
         }
         for vuln_id, record in self.osv_records.items():
             routes[part3.OSV_VULN_URL + vuln_id] = record
@@ -199,6 +204,80 @@ class Part3Test(unittest.TestCase):
         result = run(s)
         self.assertEqual(len(result["findings"]), 1)
         self.assertTrue(any("dependency list" in n for n in result["notes"]))
+
+
+def with_vector(record, vector, fixed=None, last=None):
+    record = dict(record, severity=[{"type": "CVSS_V3", "score": vector}])
+    events = [{"introduced": "0"}] + ([{"fixed": fixed}] if fixed else []) + \
+             ([{"last_affected": last}] if last else [])
+    record["affected"] = [{"package": {"name": "hermes-agent", "ecosystem": "PyPI"},
+                           "ranges": [{"type": "ECOSYSTEM", "events": events}]}]
+    return record
+
+
+class StandingSectionsTest(unittest.TestCase):
+    def test_hermes_status_merges_duplicates_and_splits_fixed_from_open(self):
+        s = Sources()
+        net = "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L/E:P"
+        ghsa_fixed = with_vector(osv_record("GHSA-f", "2026-06-01T00:00:00Z", cve="CVE-2026-7"), net, fixed="1.2.0")
+        pysec_dup = dict(ghsa_fixed, id="PYSEC-1", aliases=["CVE-2026-7", "GHSA-f"])
+        pysec_dup.pop("database_specific")
+        ghsa_open = with_vector(osv_record("GHSA-o", "2026-06-02T00:00:00Z", cve="CVE-2026-8"), net, last="1.5.0")
+        ghsa_new = with_vector(osv_record("GHSA-n", "2026-06-03T00:00:00Z"), net, fixed="1.4.0")
+        s.package_records = [pysec_dup, ghsa_fixed, ghsa_open, ghsa_new]
+        h = run(s)["hermes_status"]
+        self.assertEqual(h["latest_release"], "1.5.0")
+        self.assertEqual(h["advisories_total"], 3)
+        self.assertEqual(h["not_fixed_in_latest_release"], ["GHSA-o"])
+        self.assertEqual(h["minimum_version_clearing_fixed_advisories"], "1.4.0")
+        fixed = next(a for a in h["advisories"] if a["id"] == "GHSA-f")
+        self.assertEqual(fixed["access_and_impact"],
+                         "attack vector network; complexity low; privileges required none; "
+                         "user interaction none; confidentiality impact low; integrity impact low; "
+                         "availability impact low")
+        self.assertNotIn("crafted", str(h))
+
+    def test_version_comparison_is_numeric(self):
+        self.assertTrue(part3.version_key("0.18.0") > part3.version_key("0.9.0"))
+        spans = [("0", "0.18.0", None)]
+        self.assertTrue(part3.affects(spans, "0.9.0"))
+        self.assertFalse(part3.affects(spans, "0.18.0"))
+        self.assertTrue(part3.affects([("0", None, "0.19.0")], "0.19.0"))
+
+    def test_trend_counts_three_windows_with_check_urls(self):
+        s = Sources()
+        s.nvd["prompt injection"] = [nvd_item("CVE-2026-1", "2026-10-19T09:00:00.000")]
+        trend = run(s)["threat_picture"]["nvd_cves_published"]
+        pi = next(t for t in trend if t["keyword"] == "prompt injection")
+        self.assertEqual(len(pi["windows"]), 3)
+        self.assertEqual(pi["windows"][0]["end"], "2026-10-20")
+        self.assertEqual(pi["windows"][0]["start"], "2026-09-20")
+        self.assertIn("resultsPerPage=1", pi["windows"][0]["check_url"])
+        self.assertEqual(pi["change_pct_vs_previous_window"], 0)
+
+    def test_exploited_ai_software_counted_by_product(self):
+        s = Sources()
+        s.kev = [
+            {"cveID": "CVE-2026-50", "vendorProject": "Langflow", "product": "Langflow",
+             "dateAdded": "2026-08-04", "cwes": ["CWE-94"], "notes": "https://vendor.example/adv ; x"},
+            {"cveID": "CVE-2026-51", "vendorProject": "Ray-Project", "product": "Ray",
+             "dateAdded": "2026-05-01", "cwes": ["CWE-352"], "notes": ""},
+            {"cveID": "CVE-2026-52", "vendorProject": "Acme", "product": "Router",
+             "dateAdded": "2026-10-01", "cwes": ["CWE-1427"], "notes": ""},
+        ]
+        kev = run(s)["threat_picture"]["exploited_ai_software"]
+        self.assertEqual(kev["ai_entries_total"], 2)
+        self.assertEqual(kev["ai_added_last_90_days"], 1)
+        self.assertEqual(kev["ai_added_previous_90_days"], 1)
+        self.assertEqual(kev["prompt_injection_entries"], 1)
+        self.assertEqual(kev["most_recent"][0]["reference"], "https://vendor.example/adv")
+
+    def test_standing_sections_fail_softly(self):
+        s = Sources()
+        s.down = {part3.OSV_QUERY_URL, part3.PYPI_URL}
+        result = run(s)
+        self.assertIsNone(result["hermes_status"])
+        self.assertTrue(any("advisory list" in n for n in result["notes"]))
 
 
 if __name__ == "__main__":

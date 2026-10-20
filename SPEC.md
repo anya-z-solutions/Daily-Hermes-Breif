@@ -60,7 +60,7 @@ Failure handling:
 - Unparseable models: list them; the catalogue format may have changed.
 - Diff against the last *good* snapshot. If that is more than one day old, say so. Always state the date compared against.
 - First run: say it is a baseline.
-- Dates are UTC; the check time is recorded with its offset.
+- The brief and its snapshot are dated by UK calendar date (Europe/London), so the midnight UK run carries that day's date. All times are UTC and recorded with their offset.
 - Run lock prevents overlapping runs.
 
 ## Part 2: Model of the day (built)
@@ -105,6 +105,14 @@ Facts only: what the model is, who made it, release date, positioning, benchmark
 
 Implemented in `daily_hermes_brief_part3.py`. Tested in `tests/test_part3.py`.
 
+Part 3 gives an offline agent the evolving threat picture for a Hermes setup, so it can judge what posture to take. It has three sections, in this order.
+
+**Hermes Agent security status (repeated every night).** The latest hermes-agent release on PyPI and its date; every known advisory against hermes-agent from OSV, with GHSA and PYSEC duplicates merged; which advisories affect the latest release; and the minimum version that clears every advisory with a fixed release. Each advisory gives its ID and CVE, the version that fixes it (or that no fix exists), its CWE category, severity, the CVSS vector in plain words (attack vector, complexity, privileges, user interaction, confidentiality, integrity and availability impact), publication date and OSV link. Exploit-maturity metrics are left out.
+
+**Threat picture (repeated every night).** Measured, not described. For each of "prompt injection", "LLM", "AI agent" and "Model Context Protocol": CVEs published in the last three 30-day windows (whole UTC days), the percentage change on the previous window, and the exact NVD API query that returns the newest count, so a person can check it. Then CISA's Known Exploited Vulnerabilities list: how many entries are AI or agent software (matched by product name, so a floor), how many were added in the last 90 days and the 90 days before, how many are classed CWE-1427 (prompt injection), and the three most recent AI entries with date, CWE, NVD link and the vendor reference CISA gives.
+
+**New advisories.**
+
 - **Scope:** advisories published in the 72 hours before the run and not reported in an earlier brief. Focused on Hermes Agent but not limited to it: anything someone running a Hermes setup would want to know.
 - **Up to three findings,** one paragraph each. If fewer than three qualify, include only those. If none, write "No security news today."
 - **Priority:** confirmed exploited (listed in CISA KEV) first; then Hermes Agent itself; then a dependency Hermes Agent pins; then general AI software; then severity; then the most recent.
@@ -117,19 +125,22 @@ Implemented in `daily_hermes_brief_part3.py`. Tested in `tests/test_part3.py`.
 1. OSV (`https://api.osv.dev`), which carries GitHub Security Advisories and PyPI advisories, for `hermes-agent` and each dependency in its `pyproject.toml` at the version it pins.
 2. NVD API (`https://services.nvd.nist.gov/rest/json/cves/2.0`), filtered by publication date and the keywords "Hermes Agent", "large language model", "LLM", "AI agent", "Model Context Protocol" and "prompt injection".
 3. CVE.org records (`https://cveawg.mitre.org/api/cve/`) for affected product, versions and CWE names.
-4. CISA Known Exploited Vulnerabilities for confirmed exploitation.
+4. CISA Known Exploited Vulnerabilities for confirmed exploitation and the exploited-software counts.
+5. PyPI (`https://pypi.org/pypi/hermes-agent/json`) for the latest hermes-agent release.
+
+No source is searched for news articles. Each count links to the query that produced it instead, and CISA entries carry the vendor reference CISA lists.
 
 MITRE ATLAS, vendor security pages and web search are not used (see `DECISIONS.md`).
 
-A live search on 2026-09-22 found seven open CVEs against hermes-agent (for example CVE-2026-10223, CVE-2026-14628, CVE-2026-85105), several with public proof-of-concept code. On 2026-10-20 OSV listed 20 advisories against hermes-agent, the newest published on 2026-08-04. These IDs are not used as test fixtures.
+A live search on 2026-09-22 found seven open CVEs against hermes-agent (for example CVE-2026-10223, CVE-2026-14628, CVE-2026-85105), several with public proof-of-concept code. On 2026-10-20 OSV listed 10 distinct advisories against hermes-agent (20 records, as each appears under both a GHSA and a PYSEC ID); 2 of them affect the latest release, 0.19.0. These IDs are not used as test fixtures.
 
 ## Output and publishing
 
 - `daily_hermes_brief.py` runs all three parts and writes one brief per night into an archive folder: `briefs/YYYY-MM-DD.md` (the brief to read) and `briefs/YYYY-MM-DD.json` (the same facts as data), plus `state/snapshots/YYYY-MM-DD.json` (the compact catalogue tomorrow's diff needs).
 - `publish_brief.py` runs it against a checkout of the `briefs` branch and pushes the new files. The branch is the published archive and the state for the next run. Nothing on it is overwritten or removed. No "latest" file.
-- The brief's date is the UTC date at run time.
+- The brief's date is the UK calendar date at run time.
 - `main` holds the code only.
-- For now Claude runs `publish_brief.py` nightly at 01:07 Europe/London from a scheduled task. The owner's server (meadow-server) can run the same script later; it needs a GitHub token or deploy key limited to this repo, with push rights to `briefs` only.
+- For now Claude runs `publish_brief.py` nightly at 00:00 Europe/London from a scheduled task. The owner's server (meadow-server) can run the same script later; it needs a GitHub token or deploy key limited to this repo, with push rights to `briefs` only.
 
 ## Brief schema (version 1)
 
@@ -141,9 +152,11 @@ Every part has `part` (1, 2 or 3), `title`, `status` and `notes` (a list of plai
 |---|---|---|
 | 1 | `ok`, `baseline`, `fetch_failed`, `suspect_response` | `source`, `checked_at_utc`, `compared_against`, `model_count`, `changes`, `expiry_rollcall`, `unparseable_models` |
 | 2 | `ok`, `none`, `skipped` | `model` (the card, or null), `text` ("No model of the day." when there is no card) |
-| 3 | `ok`, `partial`, `none`, `failed` | `window_start_utc`, `window_end_utc`, `findings`, `text`, `sources_checked` |
+| 3 | `ok`, `partial`, `none`, `failed` | `hermes_status`, `threat_picture`, `window_start_utc`, `window_end_utc`, `findings`, `text`, `sources_checked` |
 
 Prices are USD per million tokens throughout. Each change in Part 1 has `type`, `tier`, `id` and `name`, plus fields for its type. Each Part 3 finding has `id`, `aliases`, `scope` (`hermes`, `dependency` or `general`), `affected`, `cwe`, `severity`, `cvss`, `fixed_in`, `exploited` (KEV date, false, or null when the list could not be checked), `published`, `sources`, `found_via` and `paragraph`.
+
+`hermes_status` (null if OSV could not be read) has `latest_release`, `latest_release_date`, `advisories_total`, `not_fixed_in_latest_release` (IDs), `minimum_version_clearing_fixed_advisories` and `advisories`, each with `id`, `cve`, `cwe`, `category`, `severity`, `cvss_vector`, `access_and_impact`, `fixed_in`, `last_affected`, `affects_latest_release`, `published` and `url`. `threat_picture` has `nvd_cves_published` (per keyword: `keyword`, `windows` of `start`, `end`, `count`, `check_url`, newest first, and `change_pct_vs_previous_window`) and `exploited_ai_software` (`ai_entries_total`, `kev_entries_total`, `ai_added_last_90_days`, `ai_added_previous_90_days`, `prompt_injection_entries`, `most_recent`, `check_url`).
 
 ## Resolved decisions
 

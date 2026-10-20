@@ -25,6 +25,18 @@ def now_utc():
     return dt.datetime.now(dt.timezone.utc)
 
 
+BRIEF_TIMEZONE = "Europe/London"
+
+
+def brief_date(moment):
+    """The brief's date: the UK calendar date at run time, so a midnight UK run is dated that day."""
+    try:
+        from zoneinfo import ZoneInfo                   # Python 3.9+, needs tz data on the system
+        return moment.astimezone(ZoneInfo(BRIEF_TIMEZONE)).strftime("%Y-%m-%d")
+    except Exception:                                   # no tz data: fall back to UTC
+        return moment.astimezone(dt.timezone.utc).strftime("%Y-%m-%d")
+
+
 def iso(moment):
     return moment.isoformat(timespec="seconds")
 

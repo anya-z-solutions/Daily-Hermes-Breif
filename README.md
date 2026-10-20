@@ -18,7 +18,7 @@ Each brief is dated and has three parts.
 
 **Part 2: Model of the day.** One model, described in depth. A newly listed model always wins. Otherwise the currently discounted model with the largest USD saving is chosen, excluding any model featured in the last 14 briefs. The card draws on the catalogue itself, then Hugging Face for open-weight models: licence, base model, linked papers, self-reported benchmarks, Spaces and discussion counts. If nothing qualifies, the brief says so.
 
-**Part 3: AI security news of the day.** Up to three advisories published in the last 72 hours and not reported before, focused on Hermes Agent and the libraries it pins but not limited to them. One paragraph each, with the affected versions, category, severity, whether exploitation is confirmed and whether a fix exists. The paragraphs are built from structured fields only, so exploit mechanics are never included. If there is no security news, the brief says so.
+**Part 3: AI security news of the day.** The evolving threat picture for Hermes setups, in three sections. First, Hermes Agent's security status, repeated every night: the latest release, every known advisory with its category and how it can be reached, which are fixed and in which version, and which still affect the latest release. Second, a measured threat picture: CVE counts for prompt injection, LLM, AI agent and Model Context Protocol flaws over three 30-day windows, with a link that reproduces each count, and how many AI and agent products are on CISA's list of exploited vulnerabilities. Third, up to three new advisories from the last 72 hours. Everything is built from structured fields, so exploit mechanics are never included.
 
 ## Where the briefs are
 
@@ -39,7 +39,7 @@ python3 publish_brief.py                         # run against the briefs branch
 python3 -m unittest discover -s tests            # run the tests, offline
 ```
 
-Each part can also be run on its own for checking (`daily_hermes_brief_part1.py`, `_part2.py`, `_part3.py`); those print and write nothing. Part 3 pauses between NVD requests to stay inside NVD's rate limit, so a full run takes about a minute.
+Each part can also be run on its own for checking (`daily_hermes_brief_part1.py`, `_part2.py`, `_part3.py`); those print and write nothing. Part 3 pauses between NVD requests to stay inside NVD's rate limit, so a full run takes about two minutes.
 
 ## Sources
 

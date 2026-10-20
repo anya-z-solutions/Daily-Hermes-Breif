@@ -2,7 +2,11 @@
 """
 Daily Hermes Brief, Part 3: AI security news.
 
-Up to three advisories published in the last LOOKBACK_HOURS, taken from
+Two standing sections, repeated every night so an agent reading only the
+newest brief still has the full picture: Hermes Agent's security status
+(latest release, every known advisory, fixed or not) and a measured threat
+picture (CVE counts per 30-day window, exploited AI software). Then up to
+three new advisories published in the last LOOKBACK_HOURS. All taken from
 structured vulnerability databases only:
 
   1. OSV (which carries GitHub Security Advisories and PyPI advisories) for
@@ -51,6 +55,20 @@ NVD_PAGE_SIZE = 100
 CVE_ORG_URL = "https://cveawg.mitre.org/api/cve/"
 KEV_URL = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
 NO_NEWS_TEXT = "No security news today."
+OSV_QUERY_URL = "https://api.osv.dev/v1/query"
+PYPI_URL = "https://pypi.org/pypi/hermes-agent/json"
+TREND_KEYWORDS = ["prompt injection", "LLM", "AI agent", "Model Context Protocol"]
+TREND_WINDOW_DAYS = 30
+TREND_WINDOWS = 3
+KEV_PAGE = "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+KEV_RECENT_DAYS = 90
+PROMPT_INJECTION_CWE = "CWE-1427"   # Improper Neutralization of Input Used for LLM Prompting
+# Products on CISA's exploited list that count as AI or agent software. Matched on vendor and
+# product names only, so the count is a floor: a product missing from this list is not counted.
+AI_PRODUCTS = re.compile(
+    r"\b(langflow|langchain|llama ?index|ollama|vllm|ray|comfyui|n8n|flowise|dify|openai|anthropic|"
+    r"hugging ?face|mlflow|gradio|open ?webui|anythingllm|litellm|autogpt|copilot|chatgpt|gemini|"
+    r"triton inference|torchserve|kubeflow|hermes agent|model context protocol|mcp)\b", re.I)
 
 SCOPE_RANK = {"hermes": 0, "dependency": 1, "general": 2}
 SCOPE_TEXT = {"hermes": "Hermes Agent", "dependency": "a dependency pinned by Hermes Agent",
@@ -94,6 +112,12 @@ CWE_NAMES = {
     "CWE-918": "Server-Side Request Forgery",
     "CWE-1321": "Prototype Pollution",
     "CWE-1333": "Inefficient Regular Expression Complexity",
+    "CWE-1427": "Improper Neutralisation of Input Used for LLM Prompting (prompt injection)",
+    "CWE-526": "Exposure of Sensitive Information Through Environment Variables",
+    "CWE-749": "Exposed Dangerous Method or Function",
+    "CWE-913": "Improper Control of Dynamically-Managed Code Resources",
+    "CWE-95": "Eval Injection",
+    "CWE-829": "Inclusion of Functionality from Untrusted Control Sphere",
 }
 
 
@@ -374,10 +398,9 @@ def load_kev(fetch_json, notes, sources):
         notes.append(f"CISA Known Exploited Vulnerabilities list could not be read: {e}.")
         sources.append({"source": "CISA KEV", "status": "failed"})
         return None
-    kev = {v.get("cveID"): v.get("dateAdded") for v in (data or {}).get("vulnerabilities") or []
-           if v.get("cveID")}
+    entries = [v for v in (data or {}).get("vulnerabilities") or [] if isinstance(v, dict) and v.get("cveID")]
     sources.append({"source": "CISA KEV", "status": "ok", "catalogue_version": (data or {}).get("catalogVersion")})
-    return kev
+    return entries
 
 
 # --- Ranking and paragraphs ------------------------------------------------
@@ -451,6 +474,234 @@ def paragraph(f, kev_checked_at):
             f"Found via: {'; '.join(f['found_via'])}. Source: {', '.join(f['sources'])}.")
 
 
+# --- Standing section: Hermes Agent security status -------------------------
+
+def version_key(version):
+    return tuple(int(n) for n in re.findall(r"\d+", str(version)))
+
+
+CVSS_TERMS = [
+    (("AV",), "attack vector", {"N": "network", "A": "adjacent network", "L": "local", "P": "physical"}),
+    (("AC",), "complexity", {"L": "low", "H": "high"}),
+    (("PR",), "privileges required", {"N": "none", "L": "low", "H": "high"}),
+    (("UI",), "user interaction", {"N": "none", "R": "required", "P": "passive", "A": "active"}),
+    (("C", "VC"), "confidentiality impact", {"H": "high", "L": "low", "N": "none"}),
+    (("I", "VI"), "integrity impact", {"H": "high", "L": "low", "N": "none"}),
+    (("A", "VA"), "availability impact", {"H": "high", "L": "low", "N": "none"}),
+]
+
+
+def describe_cvss(vector):
+    """Turn a CVSS 3.x or 4.0 vector into plain words. Exploit-maturity metrics are left out."""
+    if not vector:
+        return None
+    metrics = dict(part.split(":", 1) for part in vector.split("/")[1:] if ":" in part)
+    words = []
+    for keys, label, values in CVSS_TERMS:
+        value = next((metrics[k] for k in keys if k in metrics), None)
+        if value in values:
+            words.append(f"{label} {values[value]}")
+    return "; ".join(words) or None
+
+
+def osv_vector(record):
+    vectors = {s.get("type"): s.get("score") for s in record.get("severity") or [] if isinstance(s, dict)}
+    return vectors.get("CVSS_V3") or vectors.get("CVSS_V4")
+
+
+def hermes_ranges(record):
+    """[(introduced, fixed, last_affected)] for hermes-agent in one OSV record."""
+    spans = []
+    for a in record.get("affected") or []:
+        if (a.get("package") or {}).get("name") != HERMES_PACKAGE:
+            continue
+        for r in a.get("ranges") or []:
+            start = fixed = last = None
+            for ev in r.get("events") or []:
+                start = ev.get("introduced", start)
+                fixed = ev.get("fixed", fixed)
+                last = ev.get("last_affected", last)
+            spans.append((start or "0", fixed, last))
+    return spans
+
+
+def affects(spans, version):
+    v = version_key(version)
+    for start, fixed, last in spans:
+        if v < version_key(start):
+            continue
+        if fixed and v < version_key(fixed):
+            return True
+        if last and v <= version_key(last):
+            return True
+        if not fixed and not last:
+            return True
+    return False
+
+
+def fetch_osv_package(fetch_json):
+    """Every OSV record for hermes-agent, following pagination. Raises FetchFailure."""
+    records, token = [], None
+    for _ in range(5):
+        query = {"package": {"name": HERMES_PACKAGE, "ecosystem": "PyPI"}}
+        if token:
+            query["page_token"] = token
+        page = fetch_json(OSV_QUERY_URL, data=query) or {}
+        records += page.get("vulns") or []
+        token = page.get("next_page_token")
+        if not token:
+            break
+    return records
+
+
+def dedupe_osv(records):
+    """OSV lists most advisories twice (GHSA and PYSEC). Keep one, preferring the GitHub record."""
+    kept, seen = [], set()
+    for r in sorted(records, key=lambda r: (not r.get("id", "").startswith("GHSA"), r.get("id", ""))):
+        ids = {r.get("id"), *(r.get("aliases") or [])}
+        if not r.get("id") or ids & seen:
+            continue
+        seen |= ids
+        kept.append(r)
+    return kept
+
+
+def hermes_status(fetch_json, notes, sources):
+    """Latest release, every known advisory, which are fixed, and the version that clears them."""
+    try:
+        records = dedupe_osv(fetch_osv_package(fetch_json))
+        sources.append({"source": "OSV hermes-agent advisories", "status": "ok"})
+    except FetchFailure as e:
+        notes.append(f"hermes-agent's advisory list could not be read from OSV: {e}.")
+        sources.append({"source": "OSV hermes-agent advisories", "status": "failed"})
+        return None
+
+    latest = latest_date = None
+    try:
+        pypi = fetch_json(PYPI_URL)
+        latest = (pypi.get("info") or {}).get("version")
+        files = (pypi.get("releases") or {}).get(latest) or []
+        latest_date = (files[0].get("upload_time_iso_8601") or "")[:10] if files else None
+        sources.append({"source": "PyPI", "status": "ok"})
+    except (FetchFailure, AttributeError) as e:
+        notes.append(f"The latest hermes-agent release could not be read from PyPI: {e}.")
+        sources.append({"source": "PyPI", "status": "failed"})
+
+    advisories = []
+    for r in records:
+        db = r.get("database_specific") or {}
+        spans = hermes_ranges(r)
+        fixed = sorted({f for _, f, _ in spans if f}, key=version_key)
+        last = sorted({l for _, _, l in spans if l}, key=version_key)
+        aliases = [a for a in r.get("aliases") or [] if isinstance(a, str)]
+        cwe = [c for c in db.get("cwe_ids") or [] if isinstance(c, str)]
+        advisories.append({
+            "id": r["id"],
+            "cve": next((a for a in aliases if a.startswith("CVE-")), None),
+            "cwe": cwe,
+            "category": ", ".join(f"{c} ({CWE_NAMES[c]})" if c in CWE_NAMES else c for c in cwe)
+                        or "not classified in the source",
+            "severity": (db.get("severity") or "").upper() or None,
+            "cvss_vector": osv_vector(r),
+            "access_and_impact": describe_cvss(osv_vector(r)),
+            "fixed_in": fixed[-1] if fixed else None,
+            "last_affected": last[-1] if last else None,
+            "affects_latest_release": affects(spans, latest) if latest else (not fixed),
+            "published": (r.get("published") or "")[:10] or None,
+            "url": f"https://osv.dev/vulnerability/{r['id']}",
+        })
+    advisories.sort(key=lambda a: (version_key(a["fixed_in"] or "999999"), a["id"]))
+    fixed_versions = [a["fixed_in"] for a in advisories if a["fixed_in"]]
+    return {
+        "package": HERMES_PACKAGE,
+        "latest_release": latest,
+        "latest_release_date": latest_date,
+        "advisories_total": len(advisories),
+        "not_fixed_in_latest_release": [a["id"] for a in advisories if a["affects_latest_release"]],
+        "minimum_version_clearing_fixed_advisories": max(fixed_versions, key=version_key) if fixed_versions else None,
+        "advisories": advisories,
+    }
+
+
+# --- Standing section: threat picture ---------------------------------------
+
+def nvd_count(params, fetch_json):
+    url = f"{NVD_URL}?{params}&resultsPerPage=1"
+    data = fetch_json(url, timeout=60)
+    count = (data or {}).get("totalResults")
+    if not isinstance(count, int):
+        raise FetchFailure("NVD returned no result count")
+    return count, url
+
+
+def nvd_trend(now, fetch_json, pause, notes, sources):
+    """CVEs published per 30-day window for each keyword, newest window first, with a check URL."""
+    end_of_window = now.replace(hour=0, minute=0, second=0, microsecond=0)   # whole UTC days
+    trend, failures = [], 0
+    for keyword in TREND_KEYWORDS:
+        windows = []
+        for i in range(TREND_WINDOWS):
+            end = end_of_window - dt.timedelta(days=TREND_WINDOW_DAYS * i)
+            start = end - dt.timedelta(days=TREND_WINDOW_DAYS)
+            pause(NVD_PAUSE_SECONDS)
+            params = (f"keywordSearch={urllib.parse.quote(keyword)}"
+                      f"&pubStartDate={nvd_time(start)}&pubEndDate={nvd_time(end)}")
+            try:
+                count, url = nvd_count(params, fetch_json)
+            except FetchFailure as e:
+                failures += 1
+                notes.append(f"NVD count for '{keyword}' {start:%Y-%m-%d} to {end:%Y-%m-%d} failed: {e}.")
+                count, url = None, None
+            windows.append({"start": f"{start:%Y-%m-%d}", "end": f"{end:%Y-%m-%d}",
+                            "count": count, "check_url": url})
+        newest, previous = windows[0]["count"], windows[1]["count"] if len(windows) > 1 else None
+        change = (round((newest - previous) / previous * 100) if newest is not None and previous
+                  else None)
+        trend.append({"keyword": keyword, "windows": windows, "change_pct_vs_previous_window": change})
+    total = len(TREND_KEYWORDS) * TREND_WINDOWS
+    sources.append({"source": "NVD trend counts", "status": "failed" if failures == total else "ok",
+                    "counts_ok": total - failures, "counts_total": total})
+    return trend
+
+
+def kev_ai_summary(entries, now):
+    """Exploited AI and agent software on CISA's list, counted and dated."""
+    if entries is None:
+        return None
+    today = now.date()
+    ai = [v for v in entries if AI_PRODUCTS.search(f"{v.get('vendorProject', '')} {v.get('product', '')}")]
+
+    def added_between(days_from, days_to):
+        out = 0
+        for v in ai:
+            try:
+                age = (today - dt.date.fromisoformat(v.get("dateAdded", ""))).days
+            except ValueError:
+                continue
+            if days_from <= age < days_to:
+                out += 1
+        return out
+
+    recent = sorted(ai, key=lambda v: v.get("dateAdded", ""), reverse=True)[:3]
+    return {
+        "ai_entries_total": len(ai),
+        "kev_entries_total": len(entries),
+        "ai_added_last_90_days": added_between(0, KEV_RECENT_DAYS),
+        "ai_added_previous_90_days": added_between(KEV_RECENT_DAYS, 2 * KEV_RECENT_DAYS),
+        "prompt_injection_entries": sum(1 for v in entries if PROMPT_INJECTION_CWE in (v.get("cwes") or [])),
+        "most_recent": [{
+            "cve": v["cveID"],
+            "vendor": v.get("vendorProject"),
+            "product": v.get("product"),
+            "date_added": v.get("dateAdded"),
+            "cwe": v.get("cwes") or [],
+            "reference": next(iter(re.findall(r"https?://[^\s;]+", v.get("notes") or "")), None),
+            "nvd": f"https://nvd.nist.gov/vuln/detail/{v['cveID']}",
+        } for v in recent],
+        "check_url": KEV_PAGE,
+    }
+
+
 # --- Main ------------------------------------------------------------------
 
 def run(already_reported, now=None, fetch_json=get_json, fetch_text=get_text, pause=time.sleep):
@@ -463,6 +714,8 @@ def run(already_reported, now=None, fetch_json=get_json, fetch_text=get_text, pa
         "status": None,
         "window_start_utc": iso(window_start),
         "window_end_utc": iso(now),
+        "hermes_status": None,
+        "threat_picture": None,
         "findings": [],
         "text": None,
         "sources_checked": [],
@@ -486,7 +739,8 @@ def run(already_reported, now=None, fetch_json=get_json, fetch_text=get_text, pa
     candidates = [c for c in candidates
                   if not ({c["id"], *c["aliases"]} & set(already_reported))]
 
-    kev = load_kev(fetch_json, notes, sources)
+    kev_entries = load_kev(fetch_json, notes, sources)
+    kev = None if kev_entries is None else {v["cveID"]: v.get("dateAdded") for v in kev_entries}
     for c in candidates:
         if kev is not None:
             hits = [kev[i] for i in [c["id"], *c["aliases"]] if i in kev]
@@ -503,6 +757,12 @@ def run(already_reported, now=None, fetch_json=get_json, fetch_text=get_text, pa
         if not c.get("_hermes_keyword_only"):
             enrich_from_cve_org(c, fetch_json, notes)
     chosen = sorted(chosen, key=rank_key)      # enrichment can change scope or severity
+
+    result["hermes_status"] = hermes_status(fetch_json, notes, sources)
+    result["threat_picture"] = {
+        "nvd_cves_published": nvd_trend(now, fetch_json, pause, notes, sources),
+        "exploited_ai_software": kev_ai_summary(kev_entries, now),
+    }
 
     failed = [s["source"] for s in sources if s["status"] == "failed"]
     kev_checked_at = iso(now)

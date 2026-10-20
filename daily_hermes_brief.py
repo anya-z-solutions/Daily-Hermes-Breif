@@ -30,7 +30,7 @@ from pathlib import Path
 import daily_hermes_brief_part1 as part1
 import daily_hermes_brief_part2 as part2
 import daily_hermes_brief_part3 as part3
-from brief_common import acquire_lock, get_json, get_text, iso, now_utc, usd
+from brief_common import acquire_lock, brief_date, get_json, get_text, iso, now_utc, usd
 
 SCHEMA_VERSION = 1
 HISTORY_BRIEFS = 30          # how many earlier briefs to read back for exclusions and repeats
@@ -93,11 +93,11 @@ def build_brief(archive, raw_catalogue=None, now=None, fetch_json=get_json,
     """Return (brief, raw_to_save, today). Never raises for a part's failure."""
     archive = Path(archive)
     now = now or now_utc()
-    today = now.strftime("%Y-%m-%d")
+    today = brief_date(now)
     history = load_history(archive / "briefs", today)
 
     p1, raw_to_save, _ = part1.run(archive / "state" / "snapshots", raw=raw_catalogue,
-                                   checked_at=now)
+                                   checked_at=now, today=today)
     # Part 1 withholds a suspect catalogue from the baseline; Part 2 must not use it either.
     usable = raw_to_save if p1["status"] in ("ok", "baseline") else None
 
@@ -121,7 +121,8 @@ def build_brief(archive, raw_catalogue=None, now=None, fetch_json=get_json,
         "schema_version": SCHEMA_VERSION,
         "date": today,
         "generated_at_utc": iso(now),
-        "conventions": ("Facts only. Dates and times are UTC. Prices are USD per million tokens. "
+        "conventions": ("Facts only. The brief is dated by UK calendar date; all times are UTC. "
+                        "Prices are USD per million tokens. "
                         "Tiers: act = worth acting on, note = worth knowing."),
         "parts": [p1, p2, p3],
     }
@@ -251,10 +252,88 @@ def render_part2(p):
     return lines
 
 
+def render_hermes_status(h):
+    lines = ["### Hermes Agent security status", ""]
+    if not h:
+        return lines + ["Not available tonight (see notes).", ""]
+    latest = (f"{h['latest_release']} ({h['latest_release_date'] or 'date not stated'})"
+              if h["latest_release"] else "unknown (PyPI could not be read)")
+    open_ids = h["not_fixed_in_latest_release"]
+    lines += [f"Latest hermes-agent release on PyPI: {latest}. Known advisories (OSV, duplicates "
+              f"merged): {h['advisories_total']}. Not fixed in the latest release: {len(open_ids)}.", ""]
+    if h["minimum_version_clearing_fixed_advisories"]:
+        fixed_count = sum(1 for a in h["advisories"] if a["fixed_in"])
+        lines += [f"Update to {h['minimum_version_clearing_fixed_advisories']} or later to clear the "
+                  f"{fixed_count} advisories that have a fixed release. Each line gives the version "
+                  f"that fixes it, so any installed version below that is affected.", ""]
+
+    def line(a):
+        ids = a["id"] + (f" ({a['cve']})" if a["cve"] else "")
+        if a["fixed_in"]:
+            status = f"Fixed in {a['fixed_in']}"
+        elif a["last_affected"]:
+            status = f"No fixed release; affects versions up to {a['last_affected']} inclusive"
+        else:
+            status = "No fixed release stated"
+        return (f"- {status}: {ids}. {a['category']}. Severity {(a['severity'] or 'not rated').title()}. "
+                f"{(a['access_and_impact'] or 'No CVSS vector').capitalize()}. "
+                f"Published {a['published'] or 'date not stated'}. {a['url']}")
+
+    unfixed = [a for a in h["advisories"] if a["affects_latest_release"]]
+    fixed = [a for a in h["advisories"] if not a["affects_latest_release"]]
+    if unfixed:
+        lines += ["Affecting the latest release:", ""] + [line(a) for a in unfixed] + [""]
+    if fixed:
+        lines += ["Fixed in a released version:", ""] + [line(a) for a in fixed] + [""]
+    return lines
+
+
+def render_threat_picture(t):
+    lines = ["### Threat picture", ""]
+    if not t:
+        return lines + ["Not available tonight (see notes).", ""]
+    trend = t.get("nvd_cves_published") or []
+    if trend:
+        lines += [f"CVEs published per {part3.TREND_WINDOW_DAYS}-day window, by NVD keyword search. "
+                  f"Newest window first; each link returns the exact count (totalResults).", ""]
+        for k in trend:
+            parts = []
+            for w in k["windows"]:
+                count = "unavailable" if w["count"] is None else str(w["count"])
+                parts.append(f"{count} ({w['start']} to {w['end']})")
+            change = k["change_pct_vs_previous_window"]
+            change_text = (f"; {'+' if change >= 0 else ''}{change}% on the previous window"
+                           if change is not None else "")
+            check = k["windows"][0]["check_url"]
+            lines.append(f"- \"{k['keyword']}\": " + ", ".join(parts) + change_text
+                         + (f". Check: {check}" if check else "."))
+        lines.append("")
+    kev = t.get("exploited_ai_software")
+    if kev:
+        lines += [f"Confirmed exploited (CISA Known Exploited Vulnerabilities, {kev['kev_entries_total']} "
+                  f"entries in total): {kev['ai_entries_total']} are AI or agent software, matched by "
+                  f"product name, so this is a floor. {kev['ai_added_last_90_days']} were added in the last "
+                  f"{part3.KEV_RECENT_DAYS} days and {kev['ai_added_previous_90_days']} in the "
+                  f"{part3.KEV_RECENT_DAYS} days before. Entries classed {part3.PROMPT_INJECTION_CWE} "
+                  f"(prompt injection): {kev['prompt_injection_entries']}. Check: {kev['check_url']}", ""]
+        for v in kev["most_recent"]:
+            cwe = ", ".join(f"{c} ({part3.CWE_NAMES[c]})" if c in part3.CWE_NAMES else c for c in v["cwe"])
+            ref = f" Vendor reference: {v['reference']}." if v["reference"] else ""
+            lines.append(f"- {v['cve']}: {v['vendor']} {v['product']}, added {v['date_added']}. "
+                         f"{cwe or 'CWE not stated'}. {v['nvd']}.{ref}")
+        lines.append("")
+    return lines
+
+
 def render_part3(p):
     lines = ["## Part 3: AI security news", ""]
+    if "hermes_status" in p:
+        lines += render_hermes_status(p.get("hermes_status"))
+    if "threat_picture" in p:
+        lines += render_threat_picture(p.get("threat_picture"))
+    lines += ["### New advisories", ""]
     if p.get("window_start_utc"):
-        lines += [f"Advisories published {p['window_start_utc']} to {p['window_end_utc']}, "
+        lines += [f"Published {p['window_start_utc']} to {p['window_end_utc']}, "
                   f"not reported in an earlier brief. Up to {part3.MAX_FINDINGS}; exploited first, "
                   f"then Hermes Agent, then its pinned dependencies, then severity. No exploit detail is included.", ""]
     if p.get("findings"):
@@ -314,7 +393,7 @@ def run_nightly(archive, dry_run=False, raw_catalogue=None):
         if not acquire_lock(lock):
             print("Another run is in progress; exiting.", file=sys.stderr)
             return None
-        today = now_utc().strftime("%Y-%m-%d")
+        today = brief_date(now_utc())
         if not dry_run and (archive / "briefs" / f"{today}.json").exists():
             print(f"The brief for {today} already exists; nothing to do.")
             return []

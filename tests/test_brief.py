@@ -14,8 +14,10 @@ from brief_common import FetchFailure
 
 QUIET = {part3.PYPROJECT_URL: "[project]\ndependencies = []\n",
          part3.OSV_BATCH_URL: {"results": []},
-         part3.NVD_URL: {"vulnerabilities": []},
-         part3.KEV_URL: {"vulnerabilities": []}}
+         part3.NVD_URL: {"vulnerabilities": [], "totalResults": 0},
+         part3.KEV_URL: {"vulnerabilities": []},
+         part3.OSV_QUERY_URL: {"vulns": []},
+         part3.PYPI_URL: {"info": {"version": "1.0.0"}, "releases": {}}}
 
 
 def nightly_catalogue():
@@ -47,7 +49,8 @@ class BriefTest(unittest.TestCase):
         self.assertEqual(names, ["briefs/2026-10-20.json", "briefs/2026-10-20.md",
                                  "state/snapshots/2026-10-20.json"])
         md = (self.archive / "briefs/2026-10-20.md").read_text()
-        for heading in ("## Part 1", "## Part 2", "## Part 3"):
+        for heading in ("## Part 1", "## Part 2", "## Part 3", "### Hermes Agent security status",
+                        "### Threat picture", "### New advisories"):
             self.assertIn(heading, md)
         self.assertIn("No security news today.", md)
         saved = json.loads((self.archive / "briefs/2026-10-20.json").read_text())
@@ -77,6 +80,14 @@ class BriefTest(unittest.TestCase):
             brief, written = self.night(NOW, nightly_catalogue())
         self.assertEqual(brief["parts"][1]["status"], "error")
         self.assertIn("Part 2 failed tonight", (self.archive / "briefs/2026-10-20.md").read_text())
+
+    def test_brief_is_dated_by_uk_calendar_date(self):
+        midnight_bst = dt.datetime(2026, 7, 1, 23, 0, tzinfo=dt.timezone.utc)   # 00:00 on 2 July in London
+        brief, _, today = brief_mod.build_brief(self.archive, raw_catalogue=nightly_catalogue(),
+                                                now=midnight_bst, fetch_json=self.fetch,
+                                                fetch_text=self.fetch, pause=lambda s: None)
+        self.assertEqual(today, "2026-07-02")
+        self.assertEqual(brief["date"], "2026-07-02")
 
     def test_markdown_renders_every_change_type(self):
         p1 = {"part": 1, "status": "ok", "checked_at_utc": "x", "compared_against": "y",
