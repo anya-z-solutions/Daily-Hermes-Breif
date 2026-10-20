@@ -1,0 +1,269 @@
+{
+ "brief": "Daily Hermes Brief",
+ "schema_version": 1,
+ "date": "2026-10-20",
+ "generated_at_utc": "2026-10-20T10:19:28+00:00",
+ "conventions": "Facts only. Dates and times are UTC. Prices are USD per million tokens. Tiers: act = worth acting on, note = worth knowing.",
+ "parts": [
+  {
+   "part": 1,
+   "title": "Nous Portal model catalogue changes",
+   "source": "https://inference-api.nousresearch.com/v1/models",
+   "checked_at_utc": "2026-10-20T10:19:28+00:00",
+   "status": "baseline",
+   "compared_against": null,
+   "model_count": 427,
+   "changes": [],
+   "expiry_rollcall": [
+    {
+     "id": "google/gemini-2.5-flash",
+     "expiration_date": "2026-10-20"
+    },
+    {
+     "id": "google/gemini-2.5-flash-lite",
+     "expiration_date": "2026-10-20"
+    },
+    {
+     "id": "google/gemini-2.5-flash:batch",
+     "expiration_date": "2026-10-20"
+    },
+    {
+     "id": "google/gemini-2.5-pro",
+     "expiration_date": "2026-10-20"
+    },
+    {
+     "id": "google/gemini-2.5-pro:batch",
+     "expiration_date": "2026-10-20"
+    },
+    {
+     "id": "thinkingmachines/inkling",
+     "expiration_date": "2026-10-22"
+    },
+    {
+     "id": "poolside/laguna-s-2.1",
+     "expiration_date": "2026-10-31"
+    },
+    {
+     "id": "poolside/laguna-s-2.1:free",
+     "expiration_date": "2026-10-31"
+    },
+    {
+     "id": "poolside/laguna-xs-2.1",
+     "expiration_date": "2026-10-31"
+    },
+    {
+     "id": "poolside/laguna-xs-2.1:free",
+     "expiration_date": "2026-10-31"
+    },
+    {
+     "id": "bytedance-seed/seed-1.6",
+     "expiration_date": "2026-11-11"
+    },
+    {
+     "id": "bytedance-seed/seed-1.6-flash",
+     "expiration_date": "2026-11-11"
+    },
+    {
+     "id": "bytedance-seed/seed-2.0-code",
+     "expiration_date": "2026-11-11"
+    },
+    {
+     "id": "z-ai/glm-4.5",
+     "expiration_date": "2026-12-31"
+    },
+    {
+     "id": "qwen/qwen3.8-27b",
+     "expiration_date": "2027-01-01"
+    }
+   ],
+   "unparseable_models": [],
+   "notes": [
+    "No previous snapshot available. This run establishes the baseline; changes will be reported from the next run."
+   ]
+  },
+  {
+   "part": 2,
+   "title": "Model of the day",
+   "status": "ok",
+   "model": {
+    "id": "google/gemini-4-argon",
+    "name": "Google: Gemini 4 Argon",
+    "provider": "Google",
+    "listed_on_portal": "2026-10-13",
+    "description": "Gemini 4 Argon is Google's flagship reasoning model, built for complex software engineering, deep mathematical and scientific problem solving, and autonomous multi-step agents. Google trained it to keep context across...",
+    "context_length": 1048576,
+    "max_output_tokens": 943718,
+    "input_modalities": [
+     "audio",
+     "file",
+     "image",
+     "text",
+     "video"
+    ],
+    "output_modalities": [
+     "text"
+    ],
+    "reasoning_efforts": [
+     "high",
+     "medium",
+     "low"
+    ],
+    "knowledge_cutoff": null,
+    "expiration_date": null,
+    "pricing_usd_per_1m": {
+     "input": 2.0,
+     "output": 10.0,
+     "cache_read": 0.1,
+     "list_input": 4.0,
+     "list_output": 20.0,
+     "list_cache_read": 0.2,
+     "input_discount_pct": 50.0,
+     "output_discount_pct": 50.0
+    },
+    "discount_end_date": null,
+    "hugging_face": null,
+    "benchmarks": [],
+    "notes": [
+     "The catalogue gives no end date for this discount.",
+     "No Hugging Face ID in the catalogue (proprietary or unlisted weights).",
+     "No benchmark figures in the sources consulted."
+    ],
+    "sources": [
+     "https://inference-api.nousresearch.com/v1/models (google/gemini-4-argon)"
+    ]
+   },
+   "text": null,
+   "notes": []
+  },
+  {
+   "part": 3,
+   "title": "AI security news",
+   "status": "ok",
+   "window_start_utc": "2026-10-17T10:19:28+00:00",
+   "window_end_utc": "2026-10-20T10:19:28+00:00",
+   "findings": [
+    {
+     "id": "CVE-2026-109442",
+     "aliases": [],
+     "scope": "general",
+     "affected": [
+      "cas-bigdatalab piflow: from 2.0.0 to 2.0.1 inclusive"
+     ],
+     "cwe": [
+      "CWE-306"
+     ],
+     "cwe_names": {
+      "CWE-306": "Missing Authentication for Critical Function"
+     },
+     "severity": "CRITICAL",
+     "cvss": {
+      "version": "4.0",
+      "score": 9.3,
+      "severity": "CRITICAL"
+     },
+     "fixed_in": [],
+     "nvd_patch_reference": false,
+     "published": "2026-10-20T01:17:10+00:00",
+     "exploited": false,
+     "sources": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2026-109442",
+      "https://www.cve.org/CVERecord?id=CVE-2026-109442"
+     ],
+     "found_via": [
+      "NVD keyword 'LLM'"
+     ],
+     "paragraph": "CVE-2026-109442. Scope: general AI and agent software. Affected: cas-bigdatalab piflow: from 2.0.0 to 2.0.1 inclusive. Category: CWE-306 (Missing Authentication for Critical Function). Severity: Critical, CVSS 4.0 base score 9.3. Exploitation: Not confirmed: not in CISA's Known Exploited Vulnerabilities catalogue at 2026-10-20T10:19:28+00:00. Patch: No fixed version stated in the source. Published: 2026-10-20. Found via: NVD keyword 'LLM'. Source: https://nvd.nist.gov/vuln/detail/CVE-2026-109442, https://www.cve.org/CVERecord?id=CVE-2026-109442."
+    },
+    {
+     "id": "CVE-2026-77926",
+     "aliases": [],
+     "scope": "general",
+     "affected": [
+      "apconw Aix-DB: 1.2.4"
+     ],
+     "cwe": [
+      "CWE-749"
+     ],
+     "cwe_names": {
+      "CWE-749": "Exposed Dangerous Method or Function"
+     },
+     "severity": "HIGH",
+     "cvss": {
+      "version": "4.0",
+      "score": 8.7,
+      "severity": "HIGH"
+     },
+     "fixed_in": [],
+     "nvd_patch_reference": false,
+     "published": "2026-10-20T01:17:19+00:00",
+     "exploited": false,
+     "sources": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2026-77926",
+      "https://www.cve.org/CVERecord?id=CVE-2026-77926"
+     ],
+     "found_via": [
+      "NVD keyword 'AI agent'"
+     ],
+     "paragraph": "CVE-2026-77926. Scope: general AI and agent software. Affected: apconw Aix-DB: 1.2.4. Category: CWE-749 (Exposed Dangerous Method or Function). Severity: High, CVSS 4.0 base score 8.7. Exploitation: Not confirmed: not in CISA's Known Exploited Vulnerabilities catalogue at 2026-10-20T10:19:28+00:00. Patch: No fixed version stated in the source. Published: 2026-10-20. Found via: NVD keyword 'AI agent'. Source: https://nvd.nist.gov/vuln/detail/CVE-2026-77926, https://www.cve.org/CVERecord?id=CVE-2026-77926."
+    },
+    {
+     "id": "CVE-2026-109444",
+     "aliases": [],
+     "scope": "general",
+     "affected": [
+      "Tracer-Cloud opensre: up to 0.1.2026.10.19 inclusive"
+     ],
+     "cwe": [
+      "CWE-862"
+     ],
+     "cwe_names": {
+      "CWE-862": "Missing Authorization"
+     },
+     "severity": "HIGH",
+     "cvss": {
+      "version": "4.0",
+      "score": 8.7,
+      "severity": "HIGH"
+     },
+     "fixed_in": [],
+     "nvd_patch_reference": false,
+     "published": "2026-10-20T01:17:10+00:00",
+     "exploited": false,
+     "sources": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2026-109444",
+      "https://www.cve.org/CVERecord?id=CVE-2026-109444"
+     ],
+     "found_via": [
+      "NVD keyword 'LLM'"
+     ],
+     "paragraph": "CVE-2026-109444. Scope: general AI and agent software. Affected: Tracer-Cloud opensre: up to 0.1.2026.10.19 inclusive. Category: CWE-862 (Missing Authorization). Severity: High, CVSS 4.0 base score 8.7. Exploitation: Not confirmed: not in CISA's Known Exploited Vulnerabilities catalogue at 2026-10-20T10:19:28+00:00. Patch: No fixed version stated in the source. Published: 2026-10-20. Found via: NVD keyword 'LLM'. Source: https://nvd.nist.gov/vuln/detail/CVE-2026-109444, https://www.cve.org/CVERecord?id=CVE-2026-109444."
+    }
+   ],
+   "text": null,
+   "sources_checked": [
+    {
+     "source": "hermes-agent pyproject.toml",
+     "status": "ok",
+     "dependencies": 44
+    },
+    {
+     "source": "OSV",
+     "status": "ok",
+     "packages_checked": 45
+    },
+    {
+     "source": "NVD",
+     "status": "ok",
+     "keywords_checked": 6,
+     "keywords_total": 6
+    },
+    {
+     "source": "CISA KEV",
+     "status": "ok",
+     "catalogue_version": "2026.10.16"
+    }
+   ],
+   "notes": []
+  }
+ ]
+}
