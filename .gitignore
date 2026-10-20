@@ -1,3 +1,6 @@
 snapshots/
+archive/
+.briefs-worktree/
 .part1.lock
+.brief.lock
 __pycache__/
