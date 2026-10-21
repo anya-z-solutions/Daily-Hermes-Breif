@@ -93,6 +93,14 @@ def prepare_worktree():
     (WORKTREE / "README.md").write_text(BRANCH_README, encoding="utf-8")
 
 
+def unpushed_briefs():
+    """Commits on the local briefs branch that origin doesn't have yet, e.g. after a failed push."""
+    has_remote = git("rev-parse", "--verify", "--quiet", f"origin/{BRANCH}", check=False).returncode == 0
+    span = f"origin/{BRANCH}..HEAD" if has_remote else "HEAD"
+    log = git("log", "--format=%s", span, cwd=WORKTREE, check=False)
+    return [line for line in log.stdout.splitlines() if line.strip()][::-1]
+
+
 def main():
     parser = argparse.ArgumentParser(description="Run and publish the Daily Hermes Brief")
     parser.add_argument("--no-push", action="store_true", help="commit locally; do not push")
@@ -103,22 +111,23 @@ def main():
         written = daily_hermes_brief.run_nightly(WORKTREE)
         if written is None:
             return 1
-        if not written:
-            return 0
-        paths = [str(p.relative_to(WORKTREE)) for p in written]
-        if (WORKTREE / "README.md").exists():
-            paths.append("README.md")
-        git("add", "--", *paths, cwd=WORKTREE)
-        date = written[0].stem
-        git("commit", "-q", "-m", f"Brief {date}", cwd=WORKTREE)
+        if written:
+            paths = [str(p.relative_to(WORKTREE)) for p in written]
+            if (WORKTREE / "README.md").exists():
+                paths.append("README.md")
+            git("add", "--", *paths, cwd=WORKTREE)
+            git("commit", "-q", "-m", f"Brief {written[0].stem}", cwd=WORKTREE)
+        waiting = unpushed_briefs()
+        if not waiting:
+            return 0                          # already published; nothing to do
         if args.no_push:
-            print(f"Committed brief {date} to {BRANCH} locally; not pushed.")
+            print(f"Committed {', '.join(waiting)} to {BRANCH} locally; not pushed.")
             return 0
         pushed = with_retries("push", "-u", "origin", BRANCH, cwd=WORKTREE)
         if pushed.returncode != 0:
             print(f"Push failed: {pushed.stderr.strip()}", file=sys.stderr)
             return 1
-        print(f"Published brief {date} to the {BRANCH} branch.")
+        print(f"Published {', '.join(waiting)} to the {BRANCH} branch.")
         return 0
     except (subprocess.CalledProcessError, RuntimeError, OSError) as e:
         detail = getattr(e, "stderr", "") or str(e)
