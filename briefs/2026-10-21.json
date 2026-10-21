@@ -1,0 +1,737 @@
+{
+ "brief": "Daily Hermes Brief",
+ "schema_version": 1,
+ "date": "2026-10-21",
+ "generated_at_utc": "2026-10-21T08:49:12+00:00",
+ "conventions": "Facts only. The brief is dated by UK calendar date; all times are UTC. Prices are USD per million tokens. Tiers: act = worth acting on, note = worth knowing.",
+ "parts": [
+  {
+   "part": 1,
+   "title": "Nous Portal model catalogue changes",
+   "source": "https://inference-api.nousresearch.com/v1/models",
+   "checked_at_utc": "2026-10-21T08:49:12+00:00",
+   "status": "ok",
+   "compared_against": "2026-10-20",
+   "model_count": 426,
+   "changes": [
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "ornith/ornith-1.5-122b:free",
+     "name": "Ornith: Ornith 1.5 122B",
+     "prompt_per_1m": 0.0,
+     "completion_per_1m": 0.0,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "deepseek/deepseek-v4-flash",
+     "name": "DeepSeek: DeepSeek V4 Flash 0423",
+     "side": "prompt",
+     "previous_per_1m": 0.04,
+     "current_per_1m": 0.05,
+     "increase_pct": 25.0
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "deepseek/deepseek-v4-flash",
+     "name": "DeepSeek: DeepSeek V4 Flash 0423",
+     "side": "completion",
+     "previous_per_1m": 0.136,
+     "current_per_1m": 0.45,
+     "increase_pct": 230.9
+    },
+    {
+     "type": "discount_ended",
+     "tier": "note",
+     "id": "mistralai/mistral-large-4-0",
+     "name": "Mistral: Mistral Large 4",
+     "prompt_per_1m": 1.36,
+     "completion_per_1m": 4.18
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "moonshotai/kimi-k3",
+     "name": "MoonshotAI: Kimi K3",
+     "side": "completion",
+     "previous_per_1m": 16.0,
+     "current_per_1m": 24.0,
+     "increase_pct": 50.0
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "qwen/qwen3.8-27b",
+     "name": "Qwen: Qwen3.8 27B",
+     "side": "prompt",
+     "previous_per_1m": 0.02,
+     "current_per_1m": 0.035,
+     "increase_pct": 75.0
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "qwen/qwen3.8-27b",
+     "name": "Qwen: Qwen3.8 27B",
+     "side": "completion",
+     "previous_per_1m": 0.5,
+     "current_per_1m": 2.2,
+     "increase_pct": 340.0
+    },
+    {
+     "type": "discount_ended",
+     "tier": "note",
+     "id": "xiaomi/mimo-v2.5",
+     "name": "Xiaomi: MiMo-V2.5",
+     "prompt_per_1m": 0.119,
+     "completion_per_1m": 0.238
+    },
+    {
+     "type": "discount_ended",
+     "tier": "note",
+     "id": "xiaomi/mimo-v2.5-pro",
+     "name": "Xiaomi: MiMo-V2.5-Pro",
+     "prompt_per_1m": 0.3045,
+     "completion_per_1m": 0.609
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "xiaomi/mimo-v2.6-flash",
+     "name": "Xiaomi: MiMo-V2.6-Flash",
+     "side": "prompt",
+     "previous_per_1m": 0.03,
+     "current_per_1m": 0.1,
+     "increase_pct": 233.3
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "xiaomi/mimo-v2.6-flash",
+     "name": "Xiaomi: MiMo-V2.6-Flash",
+     "side": "completion",
+     "previous_per_1m": 0.08,
+     "current_per_1m": 0.24,
+     "increase_pct": 200.0
+    }
+   ],
+   "expiry_rollcall": [
+    {
+     "id": "thinkingmachines/inkling",
+     "expiration_date": "2026-10-22"
+    },
+    {
+     "id": "poolside/laguna-s-2.1",
+     "expiration_date": "2026-10-31"
+    },
+    {
+     "id": "poolside/laguna-s-2.1:free",
+     "expiration_date": "2026-10-31"
+    },
+    {
+     "id": "poolside/laguna-xs-2.1",
+     "expiration_date": "2026-10-31"
+    },
+    {
+     "id": "poolside/laguna-xs-2.1:free",
+     "expiration_date": "2026-10-31"
+    },
+    {
+     "id": "bytedance-seed/seed-1.6",
+     "expiration_date": "2026-11-11"
+    },
+    {
+     "id": "bytedance-seed/seed-1.6-flash",
+     "expiration_date": "2026-11-11"
+    },
+    {
+     "id": "bytedance-seed/seed-2.0-code",
+     "expiration_date": "2026-11-11"
+    },
+    {
+     "id": "z-ai/glm-4.5",
+     "expiration_date": "2026-12-31"
+    }
+   ],
+   "unparseable_models": [],
+   "notes": []
+  },
+  {
+   "part": 2,
+   "title": "Model of the day",
+   "status": "ok",
+   "model": {
+    "id": "google/gemini-3.8-flash",
+    "name": "Google: Gemini 3.8 Flash",
+    "provider": "Google",
+    "listed_on_portal": "2026-09-02",
+    "description": "Gemini 3.8 Flash is Google's most intelligent Flash model with significant gains from 3.7 Flash across software engineering, agentic tasks, and multi-step reasoning.",
+    "context_length": 1048576,
+    "max_output_tokens": 65536,
+    "input_modalities": [
+     "text",
+     "image",
+     "video",
+     "file",
+     "audio"
+    ],
+    "output_modalities": [
+     "text"
+    ],
+    "reasoning_efforts": [
+     "high",
+     "medium",
+     "low"
+    ],
+    "knowledge_cutoff": null,
+    "expiration_date": null,
+    "pricing_usd_per_1m": {
+     "input": 0.75,
+     "output": 3.75,
+     "cache_read": 0.075,
+     "list_input": 1.5,
+     "list_output": 7.5,
+     "list_cache_read": 0.15,
+     "input_discount_pct": 50.0,
+     "output_discount_pct": 50.0
+    },
+    "discount_end_date": null,
+    "hugging_face": null,
+    "benchmarks": [],
+    "notes": [
+     "The catalogue gives no end date for this discount.",
+     "No Hugging Face ID in the catalogue (proprietary or unlisted weights).",
+     "No benchmark figures in the sources consulted."
+    ],
+    "sources": [
+     "https://inference-api.nousresearch.com/v1/models (google/gemini-3.8-flash)"
+    ]
+   },
+   "text": null,
+   "notes": []
+  },
+  {
+   "part": 3,
+   "title": "AI security news",
+   "status": "ok",
+   "window_start_utc": "2026-10-18T08:49:12+00:00",
+   "window_end_utc": "2026-10-21T08:49:12+00:00",
+   "hermes_status": {
+    "package": "hermes-agent",
+    "latest_release": "0.22.2",
+    "latest_release_source": "GitHub release tag v0.22.2",
+    "pypi_latest": "0.19.0",
+    "pypi_latest_date": "2026-07-20",
+    "advisories_total": 10,
+    "fixed": [
+     "GHSA-wm96-9gfh-vvgq",
+     "GHSA-238w-f66p-w349",
+     "GHSA-33qv-c5qm-799v",
+     "GHSA-cv5c-mh6j-wvp9",
+     "GHSA-pgp4-xr4j-h5cg",
+     "GHSA-4pqm-j46f-795x",
+     "GHSA-99f9-j8r3-p853",
+     "GHSA-mv8x-fg99-32mf"
+    ],
+    "no_fix_named": [
+     "GHSA-pmqc-57g8-c22c",
+     "GHSA-xq8w-9jvx-gm3v"
+    ],
+    "no_fix_named_affecting_latest_release": [],
+    "minimum_version_clearing_fixed_advisories": "0.18.0",
+    "advisories": [
+     {
+      "id": "GHSA-wm96-9gfh-vvgq",
+      "status": "fixed",
+      "affected": "< 0.11.0",
+      "reach": "network, no login, no user action, low complexity",
+      "impact_cia": "low/low/low",
+      "cve": "CVE-2026-9368",
+      "cwe": [
+       "CWE-269",
+       "CWE-526"
+      ],
+      "category": "CWE-269 (Improper Privilege Management), CWE-526 (Exposure of Sensitive Information Through Environment Variables)",
+      "severity": "MODERATE",
+      "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+      "access_and_impact": "attack vector network; complexity low; privileges required none; user interaction none; confidentiality impact low; integrity impact low; availability impact low",
+      "fixed_in": "0.11.0",
+      "last_affected": null,
+      "affects_latest_release": false,
+      "published": "2026-05-26",
+      "url": "https://osv.dev/vulnerability/GHSA-wm96-9gfh-vvgq"
+     },
+     {
+      "id": "GHSA-238w-f66p-w349",
+      "status": "fixed",
+      "affected": "< 0.15.0",
+      "reach": "network, no login, no user action, low complexity",
+      "impact_cia": "low/low/low",
+      "cve": "CVE-2026-9353",
+      "cwe": [
+       "CWE-74"
+      ],
+      "category": "CWE-74 (Injection)",
+      "severity": "MODERATE",
+      "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+      "access_and_impact": "attack vector network; complexity low; privileges required none; user interaction none; confidentiality impact low; integrity impact low; availability impact low",
+      "fixed_in": "0.15.0",
+      "last_affected": null,
+      "affects_latest_release": false,
+      "published": "2026-05-26",
+      "url": "https://osv.dev/vulnerability/GHSA-238w-f66p-w349"
+     },
+     {
+      "id": "GHSA-33qv-c5qm-799v",
+      "status": "fixed",
+      "affected": "< 0.15.0",
+      "reach": "network, low-privilege login, no user action, low complexity",
+      "impact_cia": "low/low/low",
+      "cve": "CVE-2026-10223",
+      "cwe": [
+       "CWE-74"
+      ],
+      "category": "CWE-74 (Injection)",
+      "severity": "LOW",
+      "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+      "access_and_impact": "attack vector network; complexity low; privileges required low; user interaction none; confidentiality impact low; integrity impact low; availability impact low",
+      "fixed_in": "0.15.0",
+      "last_affected": null,
+      "affects_latest_release": false,
+      "published": "2026-06-01",
+      "url": "https://osv.dev/vulnerability/GHSA-33qv-c5qm-799v"
+     },
+     {
+      "id": "GHSA-cv5c-mh6j-wvp9",
+      "status": "fixed",
+      "affected": "< 0.15.0",
+      "reach": "local access, low-privilege login, no user action, low complexity",
+      "impact_cia": "low/low/low",
+      "cve": "CVE-2026-9369",
+      "cwe": [
+       "CWE-697"
+      ],
+      "category": "CWE-697 (Incorrect Comparison)",
+      "severity": "LOW",
+      "cvss_vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+      "access_and_impact": "attack vector local; complexity low; privileges required low; user interaction none; confidentiality impact low; integrity impact low; availability impact low",
+      "fixed_in": "0.15.0",
+      "last_affected": null,
+      "affects_latest_release": false,
+      "published": "2026-05-26",
+      "url": "https://osv.dev/vulnerability/GHSA-cv5c-mh6j-wvp9"
+     },
+     {
+      "id": "GHSA-pgp4-xr4j-h5cg",
+      "status": "fixed",
+      "affected": "< 0.15.0",
+      "reach": "network, no login, no user action, low complexity",
+      "impact_cia": "low/low/low",
+      "cve": "CVE-2026-9366",
+      "cwe": [
+       "CWE-74"
+      ],
+      "category": "CWE-74 (Injection)",
+      "severity": "MODERATE",
+      "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+      "access_and_impact": "attack vector network; complexity low; privileges required none; user interaction none; confidentiality impact low; integrity impact low; availability impact low",
+      "fixed_in": "0.15.0",
+      "last_affected": null,
+      "affects_latest_release": false,
+      "published": "2026-05-26",
+      "url": "https://osv.dev/vulnerability/GHSA-pgp4-xr4j-h5cg"
+     },
+     {
+      "id": "GHSA-4pqm-j46f-795x",
+      "status": "fixed",
+      "affected": "< 0.16.0",
+      "reach": "network, no login, no user action, low complexity",
+      "impact_cia": "none/none/high",
+      "cve": "CVE-2026-53869",
+      "cwe": [
+       "CWE-306"
+      ],
+      "category": "CWE-306 (Missing Authentication for Critical Function)",
+      "severity": "HIGH",
+      "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+      "access_and_impact": "attack vector network; complexity low; privileges required none; user interaction none; confidentiality impact none; integrity impact none; availability impact high",
+      "fixed_in": "0.16.0",
+      "last_affected": null,
+      "affects_latest_release": false,
+      "published": "2026-06-17",
+      "url": "https://osv.dev/vulnerability/GHSA-4pqm-j46f-795x"
+     },
+     {
+      "id": "GHSA-99f9-j8r3-p853",
+      "status": "fixed",
+      "affected": "< 0.16.0",
+      "reach": "local access, low-privilege login, no user action, low complexity",
+      "impact_cia": "high/none/none",
+      "cve": "CVE-2026-53870",
+      "cwe": [
+       "CWE-276"
+      ],
+      "category": "CWE-276 (Incorrect Default Permissions)",
+      "severity": "MODERATE",
+      "cvss_vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
+      "access_and_impact": "attack vector local; complexity low; privileges required low; user interaction none; confidentiality impact high; integrity impact none; availability impact none",
+      "fixed_in": "0.16.0",
+      "last_affected": null,
+      "affects_latest_release": false,
+      "published": "2026-06-17",
+      "url": "https://osv.dev/vulnerability/GHSA-99f9-j8r3-p853"
+     },
+     {
+      "id": "GHSA-mv8x-fg99-32mf",
+      "status": "fixed",
+      "affected": "< 0.18.0",
+      "reach": "network, no login, no user action, high complexity",
+      "impact_cia": "low/low/low",
+      "cve": "CVE-2026-10222",
+      "cwe": [
+       "CWE-74"
+      ],
+      "category": "CWE-74 (Injection)",
+      "severity": "LOW",
+      "cvss_vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:L",
+      "access_and_impact": "attack vector network; complexity high; privileges required none; user interaction none; confidentiality impact low; integrity impact low; availability impact low",
+      "fixed_in": "0.18.0",
+      "last_affected": null,
+      "affects_latest_release": false,
+      "published": "2026-06-01",
+      "url": "https://osv.dev/vulnerability/GHSA-mv8x-fg99-32mf"
+     },
+     {
+      "id": "GHSA-pmqc-57g8-c22c",
+      "status": "no_fix_named_latest_beyond_range",
+      "affected": "<= 0.19.0",
+      "reach": "network, no login, no user action, low complexity",
+      "impact_cia": "none/none/low",
+      "cve": "CVE-2026-10224",
+      "cwe": [
+       "CWE-400"
+      ],
+      "category": "CWE-400 (Uncontrolled Resource Consumption)",
+      "severity": "MODERATE",
+      "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+      "access_and_impact": "attack vector network; complexity low; privileges required none; user interaction none; confidentiality impact none; integrity impact none; availability impact low",
+      "fixed_in": null,
+      "last_affected": "0.19.0",
+      "affects_latest_release": false,
+      "published": "2026-06-01",
+      "url": "https://osv.dev/vulnerability/GHSA-pmqc-57g8-c22c"
+     },
+     {
+      "id": "GHSA-xq8w-9jvx-gm3v",
+      "status": "no_fix_named_latest_beyond_range",
+      "affected": "<= 0.19.0",
+      "reach": "network, no login, no user action, low complexity",
+      "impact_cia": "low/low/low",
+      "cve": "CVE-2026-10221",
+      "cwe": [
+       "CWE-74"
+      ],
+      "category": "CWE-74 (Injection)",
+      "severity": "MODERATE",
+      "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+      "access_and_impact": "attack vector network; complexity low; privileges required none; user interaction none; confidentiality impact low; integrity impact low; availability impact low",
+      "fixed_in": null,
+      "last_affected": "0.19.0",
+      "affects_latest_release": false,
+      "published": "2026-06-01",
+      "url": "https://osv.dev/vulnerability/GHSA-xq8w-9jvx-gm3v"
+     }
+    ]
+   },
+   "threat_picture": {
+    "nvd_cves_published": [
+     {
+      "keyword": "prompt injection",
+      "windows": [
+       {
+        "start": "2026-09-21",
+        "end": "2026-10-21",
+        "count": 25,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=prompt%20injection&pubStartDate=2026-09-21T00:00:00.000Z&pubEndDate=2026-10-21T00:00:00.000Z&resultsPerPage=1"
+       },
+       {
+        "start": "2026-08-22",
+        "end": "2026-09-21",
+        "count": 14,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=prompt%20injection&pubStartDate=2026-08-22T00:00:00.000Z&pubEndDate=2026-09-21T00:00:00.000Z&resultsPerPage=1"
+       },
+       {
+        "start": "2026-07-23",
+        "end": "2026-08-22",
+        "count": 16,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=prompt%20injection&pubStartDate=2026-07-23T00:00:00.000Z&pubEndDate=2026-08-22T00:00:00.000Z&resultsPerPage=1"
+       }
+      ],
+      "change_pct_vs_previous_window": 79
+     },
+     {
+      "keyword": "LLM",
+      "windows": [
+       {
+        "start": "2026-09-21",
+        "end": "2026-10-21",
+        "count": 33,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=LLM&pubStartDate=2026-09-21T00:00:00.000Z&pubEndDate=2026-10-21T00:00:00.000Z&resultsPerPage=1"
+       },
+       {
+        "start": "2026-08-22",
+        "end": "2026-09-21",
+        "count": 24,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=LLM&pubStartDate=2026-08-22T00:00:00.000Z&pubEndDate=2026-09-21T00:00:00.000Z&resultsPerPage=1"
+       },
+       {
+        "start": "2026-07-23",
+        "end": "2026-08-22",
+        "count": 30,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=LLM&pubStartDate=2026-07-23T00:00:00.000Z&pubEndDate=2026-08-22T00:00:00.000Z&resultsPerPage=1"
+       }
+      ],
+      "change_pct_vs_previous_window": 38
+     },
+     {
+      "keyword": "AI agent",
+      "windows": [
+       {
+        "start": "2026-09-21",
+        "end": "2026-10-21",
+        "count": 49,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=AI%20agent&pubStartDate=2026-09-21T00:00:00.000Z&pubEndDate=2026-10-21T00:00:00.000Z&resultsPerPage=1"
+       },
+       {
+        "start": "2026-08-22",
+        "end": "2026-09-21",
+        "count": 23,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=AI%20agent&pubStartDate=2026-08-22T00:00:00.000Z&pubEndDate=2026-09-21T00:00:00.000Z&resultsPerPage=1"
+       },
+       {
+        "start": "2026-07-23",
+        "end": "2026-08-22",
+        "count": 37,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=AI%20agent&pubStartDate=2026-07-23T00:00:00.000Z&pubEndDate=2026-08-22T00:00:00.000Z&resultsPerPage=1"
+       }
+      ],
+      "change_pct_vs_previous_window": 113
+     },
+     {
+      "keyword": "Model Context Protocol",
+      "windows": [
+       {
+        "start": "2026-09-21",
+        "end": "2026-10-21",
+        "count": 44,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=Model%20Context%20Protocol&pubStartDate=2026-09-21T00:00:00.000Z&pubEndDate=2026-10-21T00:00:00.000Z&resultsPerPage=1"
+       },
+       {
+        "start": "2026-08-22",
+        "end": "2026-09-21",
+        "count": 30,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=Model%20Context%20Protocol&pubStartDate=2026-08-22T00:00:00.000Z&pubEndDate=2026-09-21T00:00:00.000Z&resultsPerPage=1"
+       },
+       {
+        "start": "2026-07-23",
+        "end": "2026-08-22",
+        "count": 10,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=Model%20Context%20Protocol&pubStartDate=2026-07-23T00:00:00.000Z&pubEndDate=2026-08-22T00:00:00.000Z&resultsPerPage=1"
+       }
+      ],
+      "change_pct_vs_previous_window": 47
+     }
+    ],
+    "exploited_ai_software": {
+     "ai_entries_total": 12,
+     "kev_entries_total": 1754,
+     "ai_added_last_90_days": 4,
+     "ai_added_previous_90_days": 5,
+     "prompt_injection_entries": 0,
+     "most_recent": [
+      {
+       "cve": "CVE-2026-59822",
+       "vendor": "BerriAI",
+       "product": "LiteLLM",
+       "date_added": "2026-09-02",
+       "cwe": [
+        "CWE-287",
+        "CWE-306"
+       ],
+       "reference": "https://github.com/BerriAI/litellm/security/advisories/GHSA-7488-6r32-c95q",
+       "nvd": "https://nvd.nist.gov/vuln/detail/CVE-2026-59822"
+      },
+      {
+       "cve": "CVE-2026-64849",
+       "vendor": "MLflow",
+       "product": "MLflow",
+       "date_added": "2026-08-19",
+       "cwe": [
+        "CWE-918"
+       ],
+       "reference": "https://github.com/mlflow/mlflow/pull/24258",
+       "nvd": "https://nvd.nist.gov/vuln/detail/CVE-2026-64849"
+      },
+      {
+       "cve": "CVE-2025-62593",
+       "vendor": "Ray-Project",
+       "product": "Ray",
+       "date_added": "2026-08-17",
+       "cwe": [
+        "CWE-94",
+        "CWE-352"
+       ],
+       "reference": "https://github.com/ray-project/ray/security/advisories/GHSA-q279-jhrf-cc6v",
+       "nvd": "https://nvd.nist.gov/vuln/detail/CVE-2025-62593"
+      }
+     ],
+     "check_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    }
+   },
+   "findings": [
+    {
+     "id": "CVE-2026-114106",
+     "aliases": [],
+     "scope": "general",
+     "affected": [
+      "HKUDS Vibe-Trading: from 0.1.0 before 0.1.7"
+     ],
+     "cwe": [
+      "CWE-22"
+     ],
+     "cwe_names": {
+      "CWE-22": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+     },
+     "severity": "HIGH",
+     "cvss": {
+      "version": "4.0",
+      "score": 8.7,
+      "severity": "HIGH"
+     },
+     "fixed_in": [],
+     "nvd_patch_reference": false,
+     "published": "2026-10-21T01:17:36+00:00",
+     "exploited": false,
+     "sources": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2026-114106",
+      "https://www.cve.org/CVERecord?id=CVE-2026-114106"
+     ],
+     "found_via": [
+      "NVD keyword 'LLM'"
+     ],
+     "paragraph": "CVE-2026-114106. Scope: general AI and agent software. Affected: HKUDS Vibe-Trading: from 0.1.0 before 0.1.7. Category: CWE-22 (Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')). Severity: High, CVSS 4.0 base score 8.7. Exploitation: Not confirmed: not in CISA's Known Exploited Vulnerabilities catalogue at 2026-10-21T08:49:12+00:00. Patch: No fixed version stated in the source. Published: 2026-10-21. Found via: NVD keyword 'LLM'. Source: https://nvd.nist.gov/vuln/detail/CVE-2026-114106, https://www.cve.org/CVERecord?id=CVE-2026-114106."
+    },
+    {
+     "id": "CVE-2026-114107",
+     "aliases": [],
+     "scope": "general",
+     "affected": [
+      "HKUDS Vibe-Trading: from 0.1.0 before 0.1.7"
+     ],
+     "cwe": [
+      "CWE-1427"
+     ],
+     "cwe_names": {
+      "CWE-1427": "Improper Neutralization of Input Used for LLM Prompting"
+     },
+     "severity": "HIGH",
+     "cvss": {
+      "version": "4.0",
+      "score": 8.7,
+      "severity": "HIGH"
+     },
+     "fixed_in": [],
+     "nvd_patch_reference": false,
+     "published": "2026-10-21T01:17:36+00:00",
+     "exploited": false,
+     "sources": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2026-114107",
+      "https://www.cve.org/CVERecord?id=CVE-2026-114107"
+     ],
+     "found_via": [
+      "NVD keyword 'prompt injection'"
+     ],
+     "paragraph": "CVE-2026-114107. Scope: general AI and agent software. Affected: HKUDS Vibe-Trading: from 0.1.0 before 0.1.7. Category: CWE-1427 (Improper Neutralization of Input Used for LLM Prompting). Severity: High, CVSS 4.0 base score 8.7. Exploitation: Not confirmed: not in CISA's Known Exploited Vulnerabilities catalogue at 2026-10-21T08:49:12+00:00. Patch: No fixed version stated in the source. Published: 2026-10-21. Found via: NVD keyword 'prompt injection'. Source: https://nvd.nist.gov/vuln/detail/CVE-2026-114107, https://www.cve.org/CVERecord?id=CVE-2026-114107."
+    },
+    {
+     "id": "CVE-2026-111767",
+     "aliases": [],
+     "scope": "general",
+     "affected": [
+      "modelcontextprotocol typescript-sdk: >= 1.24.0, < 1.32.0"
+     ],
+     "cwe": [
+      "CWE-639",
+      "CWE-862"
+     ],
+     "cwe_names": {},
+     "severity": "HIGH",
+     "cvss": {
+      "version": "3.1",
+      "score": 8.6,
+      "severity": "HIGH"
+     },
+     "fixed_in": [],
+     "nvd_patch_reference": false,
+     "published": "2026-10-20T19:17:30+00:00",
+     "exploited": false,
+     "sources": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2026-111767",
+      "https://www.cve.org/CVERecord?id=CVE-2026-111767"
+     ],
+     "found_via": [
+      "NVD keyword 'Model Context Protocol'"
+     ],
+     "paragraph": "CVE-2026-111767. Scope: general AI and agent software. Affected: modelcontextprotocol typescript-sdk: >= 1.24.0, < 1.32.0. Category: CWE-639 (Authorisation Bypass Through User-Controlled Key), CWE-862 (Missing Authorisation). Severity: High, CVSS 3.1 base score 8.6. Exploitation: Not confirmed: not in CISA's Known Exploited Vulnerabilities catalogue at 2026-10-21T08:49:12+00:00. Patch: No fixed version stated in the source. Published: 2026-10-20. Found via: NVD keyword 'Model Context Protocol'. Source: https://nvd.nist.gov/vuln/detail/CVE-2026-111767, https://www.cve.org/CVERecord?id=CVE-2026-111767."
+    }
+   ],
+   "text": null,
+   "sources_checked": [
+    {
+     "source": "hermes-agent pyproject.toml",
+     "status": "ok",
+     "dependencies": 45
+    },
+    {
+     "source": "OSV",
+     "status": "ok",
+     "packages_checked": 46
+    },
+    {
+     "source": "NVD",
+     "status": "ok",
+     "keywords_checked": 6,
+     "keywords_total": 6
+    },
+    {
+     "source": "CISA KEV",
+     "status": "ok",
+     "catalogue_version": "2026.10.20"
+    },
+    {
+     "source": "OSV hermes-agent advisories",
+     "status": "ok"
+    },
+    {
+     "source": "GitHub release tags",
+     "status": "ok"
+    },
+    {
+     "source": "PyPI",
+     "status": "ok"
+    },
+    {
+     "source": "NVD trend counts",
+     "status": "ok",
+     "counts_ok": 12,
+     "counts_total": 12
+    }
+   ],
+   "notes": []
+  }
+ ]
+}
