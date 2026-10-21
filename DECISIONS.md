@@ -22,9 +22,15 @@ The run happens in a fresh cloud session each night, which starts with an empty 
 
 ### Running and publishing
 
-Claude runs and publishes the brief for now, via a nightly Claude scheduled task that runs `publish_brief.py`. The script checks out `briefs` in a temporary worktree, runs the brief against it, commits only the new dated files and pushes, retrying with backoff. If tonight's brief already exists it does nothing, so a repeated or overlapping run is harmless. If a push fails, the local commit is kept and goes out with the next successful push.
+Claude runs and publishes the brief for now, via a nightly Claude scheduled task that runs `publish_brief.py` (see below for which session it runs in). The script checks out `briefs` in a temporary worktree, runs the brief against it, commits only the new dated files and pushes, retrying with backoff. If tonight's brief already exists it does nothing, so a repeated or overlapping run is harmless. If a push fails, the local commit is kept and goes out with the next successful push.
 
 The schedule is 00:00 Europe/London, as the owner asked on 2026-10-20 (it was 01:07). In BST midnight in London is 23:00 UTC on the previous day, so a brief dated by UTC would carry yesterday's date and collide with the brief already written for it. Briefs and snapshots are therefore dated by UK calendar date, with every time still given in UTC. If the system has no time zone data the date falls back to UTC.
+
+### What the first nights showed (2026-10-21)
+
+The first scheduled run at midnight generated the brief but could not push it: each scheduled run started a fresh cloud session with no repository attached, and the git proxy refuses to push for a session that doesn't have the repository among its sources. A scheduled task can't be given a repository from here, and pointing one at a separate runner session that did have the repository still started a fresh session. The nightly task now resumes the session that built the project, which has the repository and has pushed successfully. Two lasting alternatives need the owner: attach the repository to the scheduled task from claude.ai's scheduled-task settings, or run `publish_brief.py` from a GitHub Actions schedule on `main` with the workflow's own token, which costs no tokens at all.
+
+The failed push also exposed a bug: a brief committed locally but not pushed was never published, because the next run saw "already exists" and stopped. `publish_brief.py` now pushes any local commits the remote doesn't have. The 2026-10-21 brief was then published by hand with Part 1 status `ok`, compared against 2026-10-20, which meets the last item in the definition of done.
 
 ## The SPEC's open decisions
 
