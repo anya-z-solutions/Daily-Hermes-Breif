@@ -77,7 +77,8 @@ class BriefTest(unittest.TestCase):
         self.assertEqual(len(written), 2)
 
     def test_a_crashing_part_is_recorded_and_the_brief_still_written(self):
-        with mock.patch.object(brief_mod.part2, "run", side_effect=KeyError("boom")):
+        with mock.patch.object(brief_mod.part2, "run", side_effect=KeyError("boom")), \
+                mock.patch.object(brief_mod.traceback, "print_exc"):   # expected crash; keep the log clean
             brief, written = self.night(NOW, nightly_catalogue())
         self.assertEqual(brief["parts"][1]["status"], "error")
         self.assertIn("Part 2 failed tonight", (self.archive / "briefs/2026-10-20.md").read_text())
