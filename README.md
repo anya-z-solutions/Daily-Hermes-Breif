@@ -39,7 +39,7 @@ python3 publish_brief.py                         # run against the briefs branch
 python3 -m unittest discover -s tests            # run the tests, offline
 ```
 
-Each part can also be run on its own for checking (`daily_hermes_brief_part1.py`, `_part2.py`, `_part3.py`); those print and write nothing. Part 3 pauses between NVD requests to stay inside NVD's rate limit, so a full run takes about two minutes.
+Each part can also be run on its own for checking (`daily_hermes_brief_part1.py`, `_part2.py`, `_part3.py`); those print and write nothing. Part 3 pauses between NVD requests to stay inside NVD's rate limit, so a full run takes under a minute. CISA's exploited list is cached in `~/.cache/daily-hermes-brief` (set `HERMES_BRIEF_CACHE` to move it) and downloaded again only when it has changed.
 
 ## Sources
 

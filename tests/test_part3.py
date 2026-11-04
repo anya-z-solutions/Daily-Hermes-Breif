@@ -271,16 +271,42 @@ class StandingSectionsTest(unittest.TestCase):
         self.assertFalse(part3.affects(spans, "0.18.0"))
         self.assertTrue(part3.affects([("0", None, "0.19.0")], "0.19.0"))
 
-    def test_trend_counts_three_windows_with_check_urls(self):
+    def test_trend_counts_by_publication_date_from_one_search_per_keyword(self):
         s = Sources()
-        s.nvd["prompt injection"] = [nvd_item("CVE-2026-1", "2026-10-19T09:00:00.000")]
-        trend = run(s)["threat_picture"]["nvd_cves_published"]
-        pi = next(t for t in trend if t["keyword"] == "prompt injection")
-        self.assertEqual(len(pi["windows"]), 3)
-        self.assertEqual(pi["windows"][0]["end"], "2026-10-20")
-        self.assertEqual(pi["windows"][0]["start"], "2026-09-20")
+        s.nvd["prompt injection"] = [
+            nvd_item("CVE-2026-1", "2026-10-19T09:00:00.000"),     # newest window and new-advisory window
+            nvd_item("CVE-2026-2", "2026-09-10T09:00:00.000"),     # previous window
+            nvd_item("CVE-2026-3", "2026-09-01T09:00:00.000"),     # previous window
+            nvd_item("CVE-2026-4", "2026-08-01T09:00:00.000"),     # oldest window
+        ]
+        fetch = s.fetch()
+        result = part3.run(set(), now=NOW, fetch_json=fetch, fetch_text=fetch, pause=lambda x: None)
+        pi = next(t for t in result["threat_picture"]["nvd_cves_published"] if t["keyword"] == "prompt injection")
+        self.assertEqual([w["count"] for w in pi["windows"]], [1, 2, 1])
+        self.assertEqual((pi["windows"][0]["start"], pi["windows"][0]["end"]), ("2026-09-20", "2026-10-20"))
+        self.assertEqual(pi["change_pct_vs_previous_window"], -50)
         self.assertIn("resultsPerPage=1", pi["windows"][0]["check_url"])
-        self.assertEqual(pi["change_pct_vs_previous_window"], 0)
+        self.assertEqual(len([u for u in fetch.calls if u.startswith(part3.NVD_URL)]), len(part3.NVD_KEYWORDS))
+        # Only the CVE inside the 72-hour window is a new-advisory candidate.
+        self.assertEqual([f["id"] for f in result["findings"]], ["CVE-2026-1"])
+
+    def test_nvd_results_are_paged(self):
+        items = [nvd_item(f"CVE-2026-{i}", "2026-10-19T09:00:00.000") for i in range(5)]
+        def nvd(url, data):
+            index = int(url.split("startIndex=")[1])
+            return {"vulnerabilities": items[index:index + 2], "totalResults": len(items)}
+        fetch = FakeFetch({part3.NVD_URL: nvd})
+        results = part3.nvd_fetch(NOW, fetch, lambda x: None, [], [])
+        self.assertEqual(len(results["LLM"]), 5)
+        self.assertEqual(len(fetch.calls), 3 * len(part3.NVD_KEYWORDS))
+
+    def test_failed_keyword_leaves_its_trend_unavailable(self):
+        fetch = FakeFetch({part3.NVD_URL: FetchFailure("HTTP 503")})
+        notes, sources = [], []
+        results = part3.nvd_fetch(NOW, fetch, lambda x: None, notes, sources)
+        trend = part3.nvd_trend(results, NOW)
+        self.assertTrue(all(w["count"] is None for t in trend for w in t["windows"]))
+        self.assertEqual(sources[0]["status"], "failed")
 
     def test_exploited_ai_software_counted_by_product(self):
         s = Sources()

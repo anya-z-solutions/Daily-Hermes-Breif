@@ -9,9 +9,11 @@ short reason that can go straight into the brief.
 import datetime as dt
 import http.client
 import json
+import os
 import time
 import urllib.error
 import urllib.request
+from pathlib import Path
 
 USER_AGENT = "daily-hermes-brief/2.0 (+https://github.com/anya-z-solutions/Daily-Hermes-Breif)"
 DEFAULT_TIMEOUT = 30
@@ -60,8 +62,8 @@ def parse_iso(value):
     return moment.astimezone(dt.timezone.utc)
 
 
-def _request(url, data=None, timeout=DEFAULT_TIMEOUT, retry_wait=10, headers=None):
-    """Return the response body as text. One retry on HTTP 429. Raises FetchFailure."""
+def _request(url, data=None, timeout=DEFAULT_TIMEOUT, retry_wait=10, headers=None, with_headers=False):
+    """Return the response body as text (and headers if asked). One retry on HTTP 429. Raises FetchFailure."""
     body = None
     all_headers = {"User-Agent": USER_AGENT}
     if headers:
@@ -75,7 +77,8 @@ def _request(url, data=None, timeout=DEFAULT_TIMEOUT, retry_wait=10, headers=Non
         try:
             req = urllib.request.Request(url, data=body, headers=all_headers)
             with urllib.request.urlopen(req, timeout=timeout) as resp:
-                return resp.read().decode("utf-8")
+                text = resp.read().decode("utf-8")
+                return (text, resp.headers) if with_headers else text
         except urllib.error.HTTPError as e:
             if e.code == 429 and attempt == 1:
                 time.sleep(retry_wait)
@@ -104,6 +107,55 @@ def get_json(url, data=None, timeout=DEFAULT_TIMEOUT, retry_wait=10):
         return json.loads(text)
     except json.JSONDecodeError:
         raise FetchFailure("response was not valid JSON") from None
+
+
+def cache_dir():
+    """Where large, slow-changing downloads are kept between runs. Outside the archive, so the
+    briefs branch stays append-only. Override with HERMES_BRIEF_CACHE."""
+    return Path(os.environ.get("HERMES_BRIEF_CACHE") or Path.home() / ".cache" / "daily-hermes-brief")
+
+
+def get_json_cached(url, timeout=DEFAULT_TIMEOUT, retry_wait=10):
+    """get_json, but ask the server to send the file only if it changed since the cached copy.
+
+    A missing or unreadable cache just means a full download. A machine that keeps its home
+    directory between runs saves the download on nights the file hasn't changed.
+    """
+    folder = cache_dir()
+    name = "".join(ch if ch.isalnum() else "_" for ch in url)[-120:]
+    body_path, meta_path = folder / f"{name}.json", folder / f"{name}.meta.json"
+    headers = {"Accept": "application/json"}
+    cached = None
+    try:
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        cached = json.loads(body_path.read_text(encoding="utf-8"))
+        if meta.get("etag"):
+            headers["If-None-Match"] = meta["etag"]
+        if meta.get("last_modified"):
+            headers["If-Modified-Since"] = meta["last_modified"]
+    except (OSError, ValueError):
+        cached = None
+    try:
+        text, resp_headers = _request(url, timeout=timeout, retry_wait=retry_wait,
+                                      headers=headers if cached is not None else {"Accept": "application/json"},
+                                      with_headers=True)
+    except FetchFailure as e:
+        if cached is not None and str(e) == "HTTP 304":
+            return cached                              # unchanged since the cached copy
+        raise
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError:
+        raise FetchFailure("response was not valid JSON") from None
+    try:
+        folder.mkdir(parents=True, exist_ok=True)
+        body_path.write_text(text, encoding="utf-8")
+        meta_path.write_text(json.dumps({"etag": resp_headers.get("ETag"),
+                                         "last_modified": resp_headers.get("Last-Modified")}),
+                             encoding="utf-8")
+    except OSError:
+        pass                                           # caching is an optimisation only
+    return data
 
 
 # --- Run lock (Linux, macOS and Windows) -----------------------------------

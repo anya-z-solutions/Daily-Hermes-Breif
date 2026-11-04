@@ -33,7 +33,7 @@ import re
 import time
 import urllib.parse
 
-from brief_common import FetchFailure, get_json, get_text, iso, now_utc, parse_iso
+from brief_common import FetchFailure, get_json, get_json_cached, get_text, iso, now_utc, parse_iso
 
 try:
     import tomllib                              # Python 3.11+
@@ -52,7 +52,7 @@ NVD_URL = "https://services.nvd.nist.gov/rest/json/cves/2.0"
 NVD_KEYWORDS = ["Hermes Agent", "large language model", "LLM", "AI agent",
                 "Model Context Protocol", "prompt injection"]
 NVD_PAUSE_SECONDS = 6.5      # NVD allows 5 requests per 30 seconds without an API key
-NVD_PAGE_SIZE = 100
+NVD_PAGE_SIZE = 2000         # NVD's maximum; 90 days of one keyword is a few hundred at most
 CVE_ORG_URL = "https://cveawg.mitre.org/api/cve/"
 KEV_URL = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
 NO_NEWS_TEXT = "No security news today."
@@ -272,28 +272,52 @@ def nvd_cvss(cve):
     return None
 
 
-def nvd_candidates(window_start, window_end, fetch_json, notes, sources, pause):
-    found, ok_keywords = {}, 0
-    for i, keyword in enumerate(NVD_KEYWORDS):
-        if i:
-            pause(NVD_PAUSE_SECONDS)
-        url = (f"{NVD_URL}?keywordSearch={urllib.parse.quote(keyword)}"
-               f"&pubStartDate={nvd_time(window_start)}&pubEndDate={nvd_time(window_end)}"
-               f"&resultsPerPage={NVD_PAGE_SIZE}")
-        try:
-            data = fetch_json(url, timeout=60)
-        except FetchFailure as e:
-            notes.append(f"NVD search for '{keyword}' failed: {e}.")
-            continue
-        ok_keywords += 1
-        for item in (data or {}).get("vulnerabilities") or []:
-            cve = (item or {}).get("cve") or {}
-            if not cve.get("id") or cve.get("vulnStatus") == "Rejected":
+def nvd_fetch(now, fetch_json, pause, notes, sources):
+    """One search per keyword covering the trend windows and the new-advisory window together.
+
+    {keyword: [cve, ...] or None if the search failed}. Pages through results if needed.
+    """
+    end_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    start = end_of_day - dt.timedelta(days=TREND_WINDOW_DAYS * TREND_WINDOWS)
+    results, requests = {}, 0
+    for keyword in NVD_KEYWORDS:
+        cves, index, total = [], 0, None
+        while total is None or index < total:
+            if requests:
+                pause(NVD_PAUSE_SECONDS)
+            requests += 1
+            url = (f"{NVD_URL}?keywordSearch={urllib.parse.quote(keyword)}"
+                   f"&pubStartDate={nvd_time(start)}&pubEndDate={nvd_time(now)}"
+                   f"&resultsPerPage={NVD_PAGE_SIZE}&startIndex={index}")
+            try:
+                data = fetch_json(url, timeout=90) or {}
+            except FetchFailure as e:
+                notes.append(f"NVD search for '{keyword}' failed: {e}.")
+                cves = None
+                break
+            page = [(item or {}).get("cve") or {} for item in data.get("vulnerabilities") or []]
+            cves += [c for c in page if c.get("id")]
+            total = data.get("totalResults") if isinstance(data.get("totalResults"), int) else len(cves)
+            index += len(page)
+            if not page:
+                break
+        results[keyword] = cves
+    ok = sum(1 for v in results.values() if v is not None)
+    sources.append({"source": "NVD", "status": "ok" if ok else "failed",
+                    "keywords_checked": ok, "keywords_total": len(NVD_KEYWORDS), "requests": requests})
+    return results
+
+
+def nvd_candidates(results, window_start):
+    """New-advisory candidates: CVEs published since window_start, from the keyword searches."""
+    found = {}
+    for keyword, cves in results.items():
+        for cve in cves or []:
+            published = parse_iso(cve.get("published"))
+            if cve.get("vulnStatus") == "Rejected" or not published or published < window_start:
                 continue
             entry = found.setdefault(cve["id"], {"cve": cve, "keywords": []})
             entry["keywords"].append(keyword)
-    sources.append({"source": "NVD", "status": "ok" if ok_keywords else "failed",
-                    "keywords_checked": ok_keywords, "keywords_total": len(NVD_KEYWORDS)})
 
     out = []
     for cve_id, entry in sorted(found.items()):
@@ -314,7 +338,7 @@ def nvd_candidates(window_start, window_end, fetch_json, notes, sources, pause):
             "cvss": cvss,
             "fixed_in": [],
             "nvd_patch_reference": patch,
-            "published": iso(published) if (published := parse_iso(cve.get("published"))) else None,
+            "published": iso(parse_iso(cve.get("published"))),
             "exploited": None,
             "sources": [f"https://nvd.nist.gov/vuln/detail/{cve_id}"],
             "found_via": [f"NVD keyword '{k}'" for k in entry["keywords"]],
@@ -397,9 +421,9 @@ def enrich_from_cve_org(finding, fetch_json, notes):
     finding["sources"].append(f"https://www.cve.org/CVERecord?id={finding['id']}")
 
 
-def load_kev(fetch_json, notes, sources):
+def load_kev(fetch_cached, notes, sources):
     try:
-        data = fetch_json(KEV_URL, timeout=90)
+        data = fetch_cached(KEV_URL, timeout=90)
     except FetchFailure as e:
         notes.append(f"CISA Known Exploited Vulnerabilities list could not be read: {e}.")
         sources.append({"source": "CISA KEV", "status": "failed"})
@@ -713,42 +737,31 @@ def hermes_status(fetch_json, fetch_text, notes, sources):
 
 # --- Standing section: threat picture ---------------------------------------
 
-def nvd_count(params, fetch_json):
-    url = f"{NVD_URL}?{params}&resultsPerPage=1"
-    data = fetch_json(url, timeout=60)
-    count = (data or {}).get("totalResults")
-    if not isinstance(count, int):
-        raise FetchFailure("NVD returned no result count")
-    return count, url
+def nvd_trend(results, now):
+    """CVEs published per 30-day window for each trend keyword, newest window first.
 
-
-def nvd_trend(now, fetch_json, pause, notes, sources):
-    """CVEs published per 30-day window for each keyword, newest window first, with a check URL."""
-    end_of_window = now.replace(hour=0, minute=0, second=0, microsecond=0)   # whole UTC days
-    trend, failures = [], 0
+    Counted from the keyword searches already made, by publication date over whole UTC days,
+    so no extra requests. Each newest window carries the NVD query that returns the same count
+    (totalResults), for a person to check.
+    """
+    end_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    trend = []
     for keyword in TREND_KEYWORDS:
+        cves = results.get(keyword)
+        published = None if cves is None else [p for p in (parse_iso(c.get("published")) for c in cves) if p]
         windows = []
         for i in range(TREND_WINDOWS):
-            end = end_of_window - dt.timedelta(days=TREND_WINDOW_DAYS * i)
+            end = end_of_day - dt.timedelta(days=TREND_WINDOW_DAYS * i)
             start = end - dt.timedelta(days=TREND_WINDOW_DAYS)
-            pause(NVD_PAUSE_SECONDS)
-            params = (f"keywordSearch={urllib.parse.quote(keyword)}"
-                      f"&pubStartDate={nvd_time(start)}&pubEndDate={nvd_time(end)}")
-            try:
-                count, url = nvd_count(params, fetch_json)
-            except FetchFailure as e:
-                failures += 1
-                notes.append(f"NVD count for '{keyword}' {start:%Y-%m-%d} to {end:%Y-%m-%d} failed: {e}.")
-                count, url = None, None
+            count = None if published is None else sum(1 for p in published if start <= p < end)
+            url = (f"{NVD_URL}?keywordSearch={urllib.parse.quote(keyword)}"
+                   f"&pubStartDate={nvd_time(start)}&pubEndDate={nvd_time(end)}&resultsPerPage=1")
             windows.append({"start": f"{start:%Y-%m-%d}", "end": f"{end:%Y-%m-%d}",
                             "count": count, "check_url": url})
-        newest, previous = windows[0]["count"], windows[1]["count"] if len(windows) > 1 else None
+        newest, previous = windows[0]["count"], windows[1]["count"]
         change = (round((newest - previous) / previous * 100) if newest is not None and previous
                   else None)
         trend.append({"keyword": keyword, "windows": windows, "change_pct_vs_previous_window": change})
-    total = len(TREND_KEYWORDS) * TREND_WINDOWS
-    sources.append({"source": "NVD trend counts", "status": "failed" if failures == total else "ok",
-                    "counts_ok": total - failures, "counts_total": total})
     return trend
 
 
@@ -792,9 +805,12 @@ def kev_ai_summary(entries, now):
 
 # --- Main ------------------------------------------------------------------
 
-def run(already_reported, now=None, fetch_json=get_json, fetch_text=get_text, pause=time.sleep):
+def run(already_reported, now=None, fetch_json=get_json, fetch_text=get_text, pause=time.sleep,
+        fetch_cached=None):
     """Build Part 3. already_reported: set of IDs and aliases from earlier briefs."""
     now = now or now_utc()
+    if fetch_cached is None:            # the KEV list is fetched only if it changed (tests use fakes)
+        fetch_cached = get_json_cached if fetch_json is get_json else fetch_json
     window_start = now - dt.timedelta(hours=LOOKBACK_HOURS)
     result = {
         "part": 3,
@@ -822,12 +838,13 @@ def run(already_reported, now=None, fetch_json=get_json, fetch_text=get_text, pa
         sources.append({"source": "hermes-agent pyproject.toml", "status": "failed"})
 
     candidates = osv_candidates(deps, window_start, now, fetch_json, notes, sources)
-    candidates += nvd_candidates(window_start, now, fetch_json, notes, sources, pause)
+    nvd_results = nvd_fetch(now, fetch_json, pause, notes, sources)
+    candidates += nvd_candidates(nvd_results, window_start)
     candidates = merge(candidates)
     candidates = [c for c in candidates
                   if not ({c["id"], *c["aliases"]} & set(already_reported))]
 
-    kev_entries = load_kev(fetch_json, notes, sources)
+    kev_entries = load_kev(fetch_cached, notes, sources)
     kev = None if kev_entries is None else {v["cveID"]: v.get("dateAdded") for v in kev_entries}
     for c in candidates:
         if kev is not None:
@@ -848,7 +865,7 @@ def run(already_reported, now=None, fetch_json=get_json, fetch_text=get_text, pa
 
     result["hermes_status"] = hermes_status(fetch_json, fetch_text, notes, sources)
     result["threat_picture"] = {
-        "nvd_cves_published": nvd_trend(now, fetch_json, pause, notes, sources),
+        "nvd_cves_published": nvd_trend(nvd_results, now),
         "exploited_ai_software": kev_ai_summary(kev_entries, now),
     }
 
