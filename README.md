@@ -74,7 +74,7 @@ GitHub Actions runs the brief every night on GitHub's machines and publishes it 
 1. **Make your own copy.** On this project's GitHub page, choose **Fork**, then **Create fork**.
 2. **Turn on Actions.** In your fork, open the **Actions** tab and choose **I understand my workflows, go ahead and enable them**. GitHub switches scheduled workflows off in new forks until you do this.
 3. **Allow it to publish.** Go to **Settings**, then **Actions**, then **General**. Under **Workflow permissions**, choose **Read and write permissions** and save.
-4. **Run it once by hand.** In **Actions**, choose **Nightly brief** in the list on the left, then **Run workflow**. After a couple of minutes a green tick shows it worked, and a new `briefs` branch holds the first brief.
+4. **Run it once by hand.** In **Actions**, choose **Nightly brief** in the list on the left, then **Run workflow**. After a couple of minutes a green tick shows it worked, and a new `briefs` branch holds the first brief. To try it without publishing anything, choose **test** under "mode" first: the brief appears on the run's summary page instead.
 5. **Leave it.** From then on it runs every night at 00:05 UTC. Your agents can read the newest file from the `briefs` branch, or you can download it from GitHub.
 
 The schedule is in `.github/workflows/nightly-brief.yml` if you want a different time. GitHub may pause scheduled workflows in a repository that has seen no activity for 60 days; if that happens, open the Actions tab and switch it back on.
