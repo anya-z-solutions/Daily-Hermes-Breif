@@ -1,0 +1,1472 @@
+{
+ "brief": "Daily Hermes Brief",
+ "schema_version": 1,
+ "date": "2026-11-04",
+ "generated_at_utc": "2026-11-04T04:18:23+00:00",
+ "conventions": "Facts only. The brief is dated by UK calendar date; all times are UTC. Prices are USD per million tokens. Tiers: act = worth acting on, note = worth knowing.",
+ "parts": [
+  {
+   "part": 1,
+   "title": "Nous Portal model catalogue changes",
+   "source": "https://inference-api.nousresearch.com/v1/models",
+   "checked_at_utc": "2026-11-04T04:18:23+00:00",
+   "status": "ok",
+   "compared_against": "2026-10-22",
+   "model_count": 383,
+   "changes": [
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "amazon/titan-embed-image-v1",
+     "name": "Amazon: Titan Multimodal Embeddings G1",
+     "prompt_per_1m": 0.8,
+     "completion_per_1m": 0.0,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "amazon/titan-embed-text-v1",
+     "name": "Amazon: Titan Embeddings G1 - Text",
+     "prompt_per_1m": 0.1,
+     "completion_per_1m": 0.0,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "amazon/titan-embed-text-v2",
+     "name": "Amazon: Titan Text Embeddings V2",
+     "prompt_per_1m": 0.02,
+     "completion_per_1m": 0.0,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "anthropic/claude-fable-5",
+     "name": "Anthropic: Claude Fable 5",
+     "prompt_per_1m": 10.0,
+     "completion_per_1m": 50.0,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "anthropic/claude-fable-5.1",
+     "name": "Anthropic: Claude Fable 5.1",
+     "prompt_per_1m": 10.0,
+     "completion_per_1m": 50.0,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "anthropic/claude-haiku-5.5",
+     "name": "Anthropic: Claude Haiku 5.5",
+     "prompt_per_1m": 0.1,
+     "completion_per_1m": 0.5,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "anthropic/claude-opus-5",
+     "name": "Anthropic: Claude Opus 5",
+     "prompt_per_1m": 5.0,
+     "completion_per_1m": 25.0,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "anthropic/claude-opus-5.5",
+     "name": "Anthropic: Claude Opus 5.5",
+     "prompt_per_1m": 4.0,
+     "completion_per_1m": 20.0,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "anthropic/claude-sonnet-5",
+     "name": "Anthropic: Claude Sonnet 5",
+     "prompt_per_1m": 2.0,
+     "completion_per_1m": 10.0,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "anthropic/claude-sonnet-5.5",
+     "name": "Anthropic: Claude Sonnet 5.5",
+     "prompt_per_1m": 2.0,
+     "completion_per_1m": 10.0,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "cohere/embed-5-fast",
+     "name": "Cohere: Embed 5 Fast",
+     "prompt_per_1m": 0.12,
+     "completion_per_1m": 0.0,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "cohere/embed-5-pro",
+     "name": "Cohere: Embed 5 Pro",
+     "prompt_per_1m": 0.12,
+     "completion_per_1m": 0.0,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "deepseek/deepseek-v4.1-flash-1017",
+     "name": "DeepSeek: DeepSeek V4.1 Flash 1017",
+     "prompt_per_1m": 0.15,
+     "completion_per_1m": 0.6,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "minimax/minimax-m3.1-flash",
+     "name": "MiniMax: MiniMax M3.1 Flash",
+     "prompt_per_1m": 0.15,
+     "completion_per_1m": 0.6,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "moonshotai/kimi-k3.1-pro",
+     "name": "MoonshotAI: Kimi K3.1 Pro",
+     "prompt_per_1m": 2.0,
+     "completion_per_1m": 10.0,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "openai/gpt-5.5",
+     "name": "OpenAI: GPT-5.5",
+     "prompt_per_1m": 5.0,
+     "completion_per_1m": 30.0,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "openai/gpt-5.6-luna",
+     "name": "OpenAI: GPT-5.6 Luna",
+     "prompt_per_1m": 0.2,
+     "completion_per_1m": 1.2,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "openai/gpt-5.6-sol",
+     "name": "OpenAI: GPT-5.6 Sol",
+     "prompt_per_1m": 4.0,
+     "completion_per_1m": 20.0,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "openai/gpt-5.6-terra",
+     "name": "OpenAI: GPT-5.6 Terra",
+     "prompt_per_1m": 2.0,
+     "completion_per_1m": 12.0,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "openai/gpt-6-astra",
+     "name": "OpenAI: GPT-6 Astra",
+     "prompt_per_1m": 10.0,
+     "completion_per_1m": 50.0,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "openai/gpt-6-luna",
+     "name": "OpenAI: GPT-6 Luna",
+     "prompt_per_1m": 0.1,
+     "completion_per_1m": 0.5,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "openai/gpt-6-sol",
+     "name": "OpenAI: GPT-6 Sol",
+     "prompt_per_1m": 2.0,
+     "completion_per_1m": 10.0,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "openai/gpt-6.1-sol",
+     "name": "OpenAI: GPT-6.1 Sol",
+     "prompt_per_1m": 2.0,
+     "completion_per_1m": 10.0,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "openai/gpt-6.1-terra",
+     "name": "OpenAI: GPT-6.1 Terra",
+     "prompt_per_1m": 1.0,
+     "completion_per_1m": 5.0,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "openai/gpt-6.1-terra:batch",
+     "name": "OpenAI: GPT-6.1 Terra (batch)",
+     "prompt_per_1m": 0.5,
+     "completion_per_1m": 2.5,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "openai/gpt-6.1-terra-pro",
+     "name": "OpenAI: GPT-6.1 Terra Pro",
+     "prompt_per_1m": 1.0,
+     "completion_per_1m": 5.0,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "particle-ai/particle-1",
+     "name": "Particle AI: Particle-1",
+     "prompt_per_1m": 0.05,
+     "completion_per_1m": 0.5,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "prism-ml/ternary-bonsai-2-9b",
+     "name": "PrismML: Ternary Bonsai 2 9B",
+     "prompt_per_1m": 0.08,
+     "completion_per_1m": 0.13,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "stealth/crouton-alpha",
+     "name": "Crouton Alpha",
+     "prompt_per_1m": 0.0,
+     "completion_per_1m": 0.0,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "x-ai/grok-4.6:batch",
+     "name": "SpaceXAI: Grok 4.6 (batch)",
+     "prompt_per_1m": 1.6,
+     "completion_per_1m": 4.8,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "x-ai/grok-4.7:batch",
+     "name": "SpaceXAI: Grok 4.7 (batch)",
+     "prompt_per_1m": 1.6,
+     "completion_per_1m": 4.8,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "new_model",
+     "tier": "act",
+     "id": "z-ai/glm-5.3-flashx-legal",
+     "name": "Z.ai: GLM 5.3 FlashX Legal",
+     "prompt_per_1m": 0.37,
+     "completion_per_1m": 1.25,
+     "original_prompt_per_1m": null,
+     "original_completion_per_1m": null
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "deepseek/deepseek-v3.2",
+     "name": "DeepSeek: DeepSeek V3.2",
+     "side": "prompt",
+     "previous_per_1m": 0.2088,
+     "current_per_1m": 0.26,
+     "increase_pct": 24.5
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "deepseek/deepseek-v3.2",
+     "name": "DeepSeek: DeepSeek V3.2",
+     "side": "completion",
+     "previous_per_1m": 0.3096,
+     "current_per_1m": 0.38,
+     "increase_pct": 22.7
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "deepseek/deepseek-v4-flash",
+     "name": "DeepSeek: DeepSeek V4 Flash 0423",
+     "side": "prompt",
+     "previous_per_1m": 0.0404,
+     "current_per_1m": 0.091,
+     "increase_pct": 125.2
+    },
+    {
+     "type": "discount_ended",
+     "tier": "note",
+     "id": "deepseek/deepseek-v4.1-flash-1017",
+     "name": "DeepSeek: DeepSeek V4.1 Flash 1017",
+     "prompt_per_1m": 0.15,
+     "completion_per_1m": 0.6
+    },
+    {
+     "type": "discount_ended",
+     "tier": "note",
+     "id": "google/gemini-3.8-flash",
+     "name": "Google: Gemini 3.8 Flash",
+     "prompt_per_1m": 0.825,
+     "completion_per_1m": 4.125
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "google/gemma-3-27b-it",
+     "name": "Google: Gemma 3 27B",
+     "side": "completion",
+     "previous_per_1m": 0.16,
+     "current_per_1m": 0.35,
+     "increase_pct": 118.7
+    },
+    {
+     "type": "discount_ended",
+     "tier": "note",
+     "id": "google/gemma-4-26b-a4b-it",
+     "name": "Google: Gemma 4 26B A4B ",
+     "prompt_per_1m": 0.081,
+     "completion_per_1m": 0.244
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "google/gemma-4-31b-it",
+     "name": "Google: Gemma 4 31B",
+     "side": "prompt",
+     "previous_per_1m": 0.1,
+     "current_per_1m": 0.2,
+     "increase_pct": 100.0
+    },
+    {
+     "type": "expiry_set",
+     "tier": "act",
+     "id": "inception/mercury-2",
+     "name": "Inception: Mercury 2",
+     "previous_expiration_date": null,
+     "expiration_date": "2026-11-08"
+    },
+    {
+     "type": "expiry_set",
+     "tier": "act",
+     "id": "inception/mercury-2.5",
+     "name": "Inception: Mercury 2.5",
+     "previous_expiration_date": null,
+     "expiration_date": "2026-11-08"
+    },
+    {
+     "type": "expiry_set",
+     "tier": "act",
+     "id": "inception/mercury-3",
+     "name": "Inception: Mercury 3",
+     "previous_expiration_date": null,
+     "expiration_date": "2026-11-08"
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "meta-llama/llama-3.1-8b-instruct",
+     "name": "Meta: Llama 3.1 8B Instruct",
+     "side": "prompt",
+     "previous_per_1m": 0.02,
+     "current_per_1m": 0.05,
+     "increase_pct": 150.0
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "meta-llama/llama-3.1-8b-instruct",
+     "name": "Meta: Llama 3.1 8B Instruct",
+     "side": "completion",
+     "previous_per_1m": 0.04,
+     "current_per_1m": 0.08,
+     "increase_pct": 100.0
+    },
+    {
+     "type": "expiry_set",
+     "tier": "act",
+     "id": "minimax/minimax-m1",
+     "name": "MiniMax: MiniMax M1",
+     "previous_expiration_date": null,
+     "expiration_date": "2026-11-05"
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "minimax/minimax-m1",
+     "name": "MiniMax: MiniMax M1",
+     "side": "prompt",
+     "previous_per_1m": 0.4,
+     "current_per_1m": 0.55,
+     "increase_pct": 37.5
+    },
+    {
+     "type": "expiry_set",
+     "tier": "act",
+     "id": "minimax/minimax-m2",
+     "name": "MiniMax: MiniMax M2",
+     "previous_expiration_date": null,
+     "expiration_date": "2026-11-05"
+    },
+    {
+     "type": "expiry_set",
+     "tier": "act",
+     "id": "minimax/minimax-m2.1",
+     "name": "MiniMax: MiniMax M2.1",
+     "previous_expiration_date": null,
+     "expiration_date": "2026-11-05"
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "minimax/minimax-m2.7",
+     "name": "MiniMax: MiniMax M2.7",
+     "side": "prompt",
+     "previous_per_1m": 0.21,
+     "current_per_1m": 0.3,
+     "increase_pct": 42.9
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "minimax/minimax-m2.7",
+     "name": "MiniMax: MiniMax M2.7",
+     "side": "completion",
+     "previous_per_1m": 0.84,
+     "current_per_1m": 1.2,
+     "increase_pct": 42.9
+    },
+    {
+     "type": "discount_ended",
+     "tier": "note",
+     "id": "minimax/minimax-m3",
+     "name": "MiniMax: MiniMax M3",
+     "prompt_per_1m": 0.3,
+     "completion_per_1m": 1.2
+    },
+    {
+     "type": "discount_ended",
+     "tier": "note",
+     "id": "mistralai/mistral-nemo",
+     "name": "Mistral: Mistral Nemo",
+     "prompt_per_1m": 0.029,
+     "completion_per_1m": 0.03
+    },
+    {
+     "type": "discount_ended",
+     "tier": "note",
+     "id": "mistralai/mistral-small-3.2-24b-instruct",
+     "name": "Mistral: Mistral Small 3.2 24B",
+     "prompt_per_1m": 0.075,
+     "completion_per_1m": 0.2
+    },
+    {
+     "type": "discount_ended",
+     "tier": "note",
+     "id": "moonshotai/kimi-k2.6",
+     "name": "MoonshotAI: Kimi K2.6",
+     "prompt_per_1m": 0.65,
+     "completion_per_1m": 3.41
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "nvidia/nemotron-3-super-120b-a12b",
+     "name": "NVIDIA: Nemotron 3 Super",
+     "side": "prompt",
+     "previous_per_1m": 0.08,
+     "current_per_1m": 0.3,
+     "increase_pct": 275.0
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "nvidia/nemotron-3-super-120b-a12b",
+     "name": "NVIDIA: Nemotron 3 Super",
+     "side": "completion",
+     "previous_per_1m": 0.45,
+     "current_per_1m": 2.4,
+     "increase_pct": 433.3
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "nvidia/nemotron-3.5-lightning",
+     "name": "NVIDIA: Nemotron 3.5 Lightning",
+     "side": "prompt",
+     "previous_per_1m": 0.025,
+     "current_per_1m": 0.07,
+     "increase_pct": 180.0
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "nvidia/nemotron-3.5-lightning",
+     "name": "NVIDIA: Nemotron 3.5 Lightning",
+     "side": "completion",
+     "previous_per_1m": 0.12,
+     "current_per_1m": 0.2,
+     "increase_pct": 66.7
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "nvidia/nemotron-3.5-super-vl",
+     "name": "NVIDIA: Nemotron 3.5 Super VL",
+     "side": "prompt",
+     "previous_per_1m": 0.1,
+     "current_per_1m": 0.15,
+     "increase_pct": 50.0
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "nvidia/nemotron-3.5-super-vl",
+     "name": "NVIDIA: Nemotron 3.5 Super VL",
+     "side": "completion",
+     "previous_per_1m": 0.4,
+     "current_per_1m": 0.5,
+     "increase_pct": 25.0
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "openai/gpt-oss-120b",
+     "name": "OpenAI: gpt-oss-120b",
+     "side": "prompt",
+     "previous_per_1m": 0.03,
+     "current_per_1m": 0.15,
+     "increase_pct": 400.0
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "openai/gpt-oss-120b",
+     "name": "OpenAI: gpt-oss-120b",
+     "side": "completion",
+     "previous_per_1m": 0.15,
+     "current_per_1m": 0.6,
+     "increase_pct": 300.0
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "openai/gpt-oss-20b",
+     "name": "OpenAI: gpt-oss-20b",
+     "side": "prompt",
+     "previous_per_1m": 0.018,
+     "current_per_1m": 0.03,
+     "increase_pct": 66.7
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "openai/gpt-oss-20b",
+     "name": "OpenAI: gpt-oss-20b",
+     "side": "completion",
+     "previous_per_1m": 0.09,
+     "current_per_1m": 0.13,
+     "increase_pct": 44.4
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "qwen/qwen3-235b-a22b-2507",
+     "name": "Qwen: Qwen3 235B A22B Instruct 2507",
+     "side": "completion",
+     "previous_per_1m": 0.35,
+     "current_per_1m": 0.55,
+     "increase_pct": 57.1
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "qwen/qwen3-coder",
+     "name": "Qwen: Qwen3 Coder 480B A35B",
+     "side": "prompt",
+     "previous_per_1m": 0.22,
+     "current_per_1m": 0.3,
+     "increase_pct": 36.4
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "qwen/qwen3-coder-30b-a3b-instruct",
+     "name": "Qwen: Qwen3 Coder 30B A3B Instruct",
+     "side": "prompt",
+     "previous_per_1m": 0.07,
+     "current_per_1m": 0.15,
+     "increase_pct": 114.3
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "qwen/qwen3-coder-30b-a3b-instruct",
+     "name": "Qwen: Qwen3 Coder 30B A3B Instruct",
+     "side": "completion",
+     "previous_per_1m": 0.28,
+     "current_per_1m": 0.6,
+     "increase_pct": 114.3
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "qwen/qwen3-vl-235b-a22b-instruct",
+     "name": "Qwen: Qwen3 VL 235B A22B Instruct",
+     "side": "completion",
+     "previous_per_1m": 0.88,
+     "current_per_1m": 1.9,
+     "increase_pct": 115.9
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "qwen/qwen3.5-27b",
+     "name": "Qwen: Qwen3.5-27B",
+     "side": "prompt",
+     "previous_per_1m": 0.195,
+     "current_per_1m": 0.26,
+     "increase_pct": 33.3
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "qwen/qwen3.5-27b",
+     "name": "Qwen: Qwen3.5-27B",
+     "side": "completion",
+     "previous_per_1m": 1.56,
+     "current_per_1m": 2.6,
+     "increase_pct": 66.7
+    },
+    {
+     "type": "discount_ended",
+     "tier": "note",
+     "id": "qwen/qwen3.5-35b-a3b",
+     "name": "Qwen: Qwen3.5-35B-A3B",
+     "prompt_per_1m": 0.14,
+     "completion_per_1m": 1.0
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "qwen/qwen3.5-397b-a17b",
+     "name": "Qwen: Qwen3.5 397B A17B",
+     "side": "prompt",
+     "previous_per_1m": 0.39,
+     "current_per_1m": 0.5,
+     "increase_pct": 28.2
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "qwen/qwen3.5-397b-a17b",
+     "name": "Qwen: Qwen3.5 397B A17B",
+     "side": "completion",
+     "previous_per_1m": 2.34,
+     "current_per_1m": 3.6,
+     "increase_pct": 53.8
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "qwen/qwen3.5-9b",
+     "name": "Qwen: Qwen3.5-9B",
+     "side": "prompt",
+     "previous_per_1m": 0.08,
+     "current_per_1m": 0.17,
+     "increase_pct": 112.5
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "qwen/qwen3.5-9b",
+     "name": "Qwen: Qwen3.5-9B",
+     "side": "completion",
+     "previous_per_1m": 0.13,
+     "current_per_1m": 0.25,
+     "increase_pct": 92.3
+    },
+    {
+     "type": "discount_ended",
+     "tier": "note",
+     "id": "qwen/qwen3.6-27b",
+     "name": "Qwen: Qwen3.6 27B",
+     "prompt_per_1m": 0.45,
+     "completion_per_1m": 2.7
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "qwen/qwen3.6-35b-a3b",
+     "name": "Qwen: Qwen3.6 35B A3B",
+     "side": "prompt",
+     "previous_per_1m": 0.05,
+     "current_per_1m": 0.1,
+     "increase_pct": 100.0
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "qwen/qwen3.6-35b-a3b",
+     "name": "Qwen: Qwen3.6 35B A3B",
+     "side": "completion",
+     "previous_per_1m": 0.7,
+     "current_per_1m": 0.9,
+     "increase_pct": 28.6
+    },
+    {
+     "type": "discount_ended",
+     "tier": "note",
+     "id": "qwen/qwen3.8-27b",
+     "name": "Qwen: Qwen3.8 27B",
+     "prompt_per_1m": 0.15,
+     "completion_per_1m": 1.875
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "tencent/hy3",
+     "name": "Tencent: Hy3",
+     "side": "prompt",
+     "previous_per_1m": 0.0825,
+     "current_per_1m": 0.132,
+     "increase_pct": 60.0
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "tencent/hy3",
+     "name": "Tencent: Hy3",
+     "side": "completion",
+     "previous_per_1m": 0.33,
+     "current_per_1m": 0.528,
+     "increase_pct": 60.0
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "xiaomi/mimo-v2.5",
+     "name": "Xiaomi: MiMo-V2.5",
+     "side": "prompt",
+     "previous_per_1m": 0.119,
+     "current_per_1m": 0.4,
+     "increase_pct": 236.1
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "xiaomi/mimo-v2.5",
+     "name": "Xiaomi: MiMo-V2.5",
+     "side": "completion",
+     "previous_per_1m": 0.238,
+     "current_per_1m": 2.0,
+     "increase_pct": 740.3
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "xiaomi/mimo-v2.5-pro",
+     "name": "Xiaomi: MiMo-V2.5-Pro",
+     "side": "prompt",
+     "previous_per_1m": 0.3045,
+     "current_per_1m": 0.48,
+     "increase_pct": 57.6
+    },
+    {
+     "type": "price_increase",
+     "tier": "note",
+     "id": "xiaomi/mimo-v2.5-pro",
+     "name": "Xiaomi: MiMo-V2.5-Pro",
+     "side": "completion",
+     "previous_per_1m": 0.609,
+     "current_per_1m": 1.8,
+     "increase_pct": 195.6
+    },
+    {
+     "type": "discount_ended",
+     "tier": "note",
+     "id": "xiaomi/mimo-v2.6-flash",
+     "name": "Xiaomi: MiMo-V2.6-Flash",
+     "prompt_per_1m": 0.14,
+     "completion_per_1m": 0.28
+    },
+    {
+     "type": "discount_ended",
+     "tier": "note",
+     "id": "xiaomi/mimo-v2.6-pro",
+     "name": "Xiaomi: MiMo-V2.6-Pro",
+     "prompt_per_1m": 0.435,
+     "completion_per_1m": 0.87
+    },
+    {
+     "type": "discount_ended",
+     "tier": "note",
+     "id": "z-ai/glm-4.5-air",
+     "name": "Z.ai: GLM 4.5 Air",
+     "prompt_per_1m": 0.13,
+     "completion_per_1m": 0.85
+    },
+    {
+     "type": "discount_ended",
+     "tier": "note",
+     "id": "z-ai/glm-4.6",
+     "name": "Z.ai: GLM 4.6",
+     "prompt_per_1m": 0.5,
+     "completion_per_1m": 2.0
+    },
+    {
+     "type": "discount_ended",
+     "tier": "note",
+     "id": "z-ai/glm-4.7",
+     "name": "Z.ai: GLM 4.7",
+     "prompt_per_1m": 0.6,
+     "completion_per_1m": 2.2
+    },
+    {
+     "type": "discount_ended",
+     "tier": "note",
+     "id": "z-ai/glm-5",
+     "name": "Z.ai: GLM 5",
+     "prompt_per_1m": 1.0,
+     "completion_per_1m": 3.2
+    },
+    {
+     "type": "discount_ended",
+     "tier": "note",
+     "id": "z-ai/glm-5.1",
+     "name": "Z.ai: GLM 5.1",
+     "prompt_per_1m": 1.4,
+     "completion_per_1m": 4.4
+    }
+   ],
+   "expiry_rollcall": [
+    {
+     "id": "minimax/minimax-m1",
+     "expiration_date": "2026-11-05"
+    },
+    {
+     "id": "minimax/minimax-m2",
+     "expiration_date": "2026-11-05"
+    },
+    {
+     "id": "minimax/minimax-m2.1",
+     "expiration_date": "2026-11-05"
+    },
+    {
+     "id": "inception/mercury-2",
+     "expiration_date": "2026-11-08"
+    },
+    {
+     "id": "inception/mercury-2.5",
+     "expiration_date": "2026-11-08"
+    },
+    {
+     "id": "inception/mercury-3",
+     "expiration_date": "2026-11-08"
+    },
+    {
+     "id": "bytedance-seed/seed-1.6",
+     "expiration_date": "2026-11-11"
+    },
+    {
+     "id": "bytedance-seed/seed-1.6-flash",
+     "expiration_date": "2026-11-11"
+    },
+    {
+     "id": "bytedance-seed/seed-2.0-code",
+     "expiration_date": "2026-11-11"
+    },
+    {
+     "id": "minimax/minimax-m3.1-flash",
+     "expiration_date": "2026-12-31"
+    },
+    {
+     "id": "z-ai/glm-4.5",
+     "expiration_date": "2026-12-31"
+    }
+   ],
+   "unparseable_models": [],
+   "notes": [
+    "Compared against 2026-10-22, 13 days ago. Changes may span more than one day."
+   ]
+  },
+  {
+   "part": 2,
+   "title": "Model of the day",
+   "status": "ok",
+   "model": {
+    "id": "openai/gpt-6-astra",
+    "name": "OpenAI: GPT-6 Astra",
+    "provider": "OpenAI",
+    "listed_on_portal": "2026-09-04",
+    "description": "GPT-6 Astra is OpenAI's flagship model for demanding end-to-end work. It is suited for advanced analysis, software engineering, deep research, scientific work, and document creation, with particular strengths in long-horizon tasks.",
+    "context_length": 1050000,
+    "max_output_tokens": 128000,
+    "input_modalities": [
+     "text",
+     "image"
+    ],
+    "output_modalities": [
+     "text"
+    ],
+    "reasoning_efforts": [
+     "max",
+     "xhigh",
+     "high",
+     "medium",
+     "low"
+    ],
+    "knowledge_cutoff": null,
+    "expiration_date": null,
+    "pricing_usd_per_1m": {
+     "input": 10.0,
+     "output": 50.0,
+     "cache_read": 1.0,
+     "list_input": null,
+     "list_output": null,
+     "list_cache_read": null,
+     "input_discount_pct": null,
+     "output_discount_pct": null
+    },
+    "discount_end_date": null,
+    "hugging_face": null,
+    "benchmarks": [],
+    "notes": [
+     "No Hugging Face ID in the catalogue (proprietary or unlisted weights).",
+     "No benchmark figures in the sources consulted."
+    ],
+    "sources": [
+     "https://inference-api.nousresearch.com/v1/models (openai/gpt-6-astra)"
+    ]
+   },
+   "text": null,
+   "notes": []
+  },
+  {
+   "part": 3,
+   "title": "AI security news",
+   "status": "ok",
+   "window_start_utc": "2026-11-01T04:18:23+00:00",
+   "window_end_utc": "2026-11-04T04:18:23+00:00",
+   "hermes_status": {
+    "package": "hermes-agent",
+    "latest_release": "0.22.7",
+    "latest_release_source": "GitHub release tag v0.22.7",
+    "pypi_latest": "0.19.0",
+    "pypi_latest_date": "2026-07-20",
+    "advisories_total": 10,
+    "fixed": [
+     "GHSA-wm96-9gfh-vvgq",
+     "GHSA-238w-f66p-w349",
+     "GHSA-33qv-c5qm-799v",
+     "GHSA-cv5c-mh6j-wvp9",
+     "GHSA-pgp4-xr4j-h5cg",
+     "GHSA-4pqm-j46f-795x",
+     "GHSA-99f9-j8r3-p853",
+     "GHSA-mv8x-fg99-32mf"
+    ],
+    "no_fix_named": [
+     "GHSA-pmqc-57g8-c22c",
+     "GHSA-xq8w-9jvx-gm3v"
+    ],
+    "no_fix_named_affecting_latest_release": [],
+    "minimum_version_clearing_fixed_advisories": "0.18.0",
+    "advisories": [
+     {
+      "id": "GHSA-wm96-9gfh-vvgq",
+      "status": "fixed",
+      "affected": "< 0.11.0",
+      "reach": "network, no login, no user action, low complexity",
+      "impact_cia": "low/low/low",
+      "cve": "CVE-2026-9368",
+      "cwe": [
+       "CWE-269",
+       "CWE-526"
+      ],
+      "category": "CWE-269 (Improper Privilege Management), CWE-526 (Exposure of Sensitive Information Through Environment Variables)",
+      "severity": "MODERATE",
+      "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+      "access_and_impact": "attack vector network; complexity low; privileges required none; user interaction none; confidentiality impact low; integrity impact low; availability impact low",
+      "fixed_in": "0.11.0",
+      "last_affected": null,
+      "affects_latest_release": false,
+      "published": "2026-05-26",
+      "url": "https://osv.dev/vulnerability/GHSA-wm96-9gfh-vvgq"
+     },
+     {
+      "id": "GHSA-238w-f66p-w349",
+      "status": "fixed",
+      "affected": "< 0.15.0",
+      "reach": "network, no login, no user action, low complexity",
+      "impact_cia": "low/low/low",
+      "cve": "CVE-2026-9353",
+      "cwe": [
+       "CWE-74"
+      ],
+      "category": "CWE-74 (Injection)",
+      "severity": "MODERATE",
+      "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+      "access_and_impact": "attack vector network; complexity low; privileges required none; user interaction none; confidentiality impact low; integrity impact low; availability impact low",
+      "fixed_in": "0.15.0",
+      "last_affected": null,
+      "affects_latest_release": false,
+      "published": "2026-05-26",
+      "url": "https://osv.dev/vulnerability/GHSA-238w-f66p-w349"
+     },
+     {
+      "id": "GHSA-33qv-c5qm-799v",
+      "status": "fixed",
+      "affected": "< 0.15.0",
+      "reach": "network, low-privilege login, no user action, low complexity",
+      "impact_cia": "low/low/low",
+      "cve": "CVE-2026-10223",
+      "cwe": [
+       "CWE-74"
+      ],
+      "category": "CWE-74 (Injection)",
+      "severity": "LOW",
+      "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+      "access_and_impact": "attack vector network; complexity low; privileges required low; user interaction none; confidentiality impact low; integrity impact low; availability impact low",
+      "fixed_in": "0.15.0",
+      "last_affected": null,
+      "affects_latest_release": false,
+      "published": "2026-06-01",
+      "url": "https://osv.dev/vulnerability/GHSA-33qv-c5qm-799v"
+     },
+     {
+      "id": "GHSA-cv5c-mh6j-wvp9",
+      "status": "fixed",
+      "affected": "< 0.15.0",
+      "reach": "local access, low-privilege login, no user action, low complexity",
+      "impact_cia": "low/low/low",
+      "cve": "CVE-2026-9369",
+      "cwe": [
+       "CWE-697"
+      ],
+      "category": "CWE-697 (Incorrect Comparison)",
+      "severity": "LOW",
+      "cvss_vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+      "access_and_impact": "attack vector local; complexity low; privileges required low; user interaction none; confidentiality impact low; integrity impact low; availability impact low",
+      "fixed_in": "0.15.0",
+      "last_affected": null,
+      "affects_latest_release": false,
+      "published": "2026-05-26",
+      "url": "https://osv.dev/vulnerability/GHSA-cv5c-mh6j-wvp9"
+     },
+     {
+      "id": "GHSA-pgp4-xr4j-h5cg",
+      "status": "fixed",
+      "affected": "< 0.15.0",
+      "reach": "network, no login, no user action, low complexity",
+      "impact_cia": "low/low/low",
+      "cve": "CVE-2026-9366",
+      "cwe": [
+       "CWE-74"
+      ],
+      "category": "CWE-74 (Injection)",
+      "severity": "MODERATE",
+      "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+      "access_and_impact": "attack vector network; complexity low; privileges required none; user interaction none; confidentiality impact low; integrity impact low; availability impact low",
+      "fixed_in": "0.15.0",
+      "last_affected": null,
+      "affects_latest_release": false,
+      "published": "2026-05-26",
+      "url": "https://osv.dev/vulnerability/GHSA-pgp4-xr4j-h5cg"
+     },
+     {
+      "id": "GHSA-4pqm-j46f-795x",
+      "status": "fixed",
+      "affected": "< 0.16.0",
+      "reach": "network, no login, no user action, low complexity",
+      "impact_cia": "none/none/high",
+      "cve": "CVE-2026-53869",
+      "cwe": [
+       "CWE-306"
+      ],
+      "category": "CWE-306 (Missing Authentication for Critical Function)",
+      "severity": "HIGH",
+      "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+      "access_and_impact": "attack vector network; complexity low; privileges required none; user interaction none; confidentiality impact none; integrity impact none; availability impact high",
+      "fixed_in": "0.16.0",
+      "last_affected": null,
+      "affects_latest_release": false,
+      "published": "2026-06-17",
+      "url": "https://osv.dev/vulnerability/GHSA-4pqm-j46f-795x"
+     },
+     {
+      "id": "GHSA-99f9-j8r3-p853",
+      "status": "fixed",
+      "affected": "< 0.16.0",
+      "reach": "local access, low-privilege login, no user action, low complexity",
+      "impact_cia": "high/none/none",
+      "cve": "CVE-2026-53870",
+      "cwe": [
+       "CWE-276"
+      ],
+      "category": "CWE-276 (Incorrect Default Permissions)",
+      "severity": "MODERATE",
+      "cvss_vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
+      "access_and_impact": "attack vector local; complexity low; privileges required low; user interaction none; confidentiality impact high; integrity impact none; availability impact none",
+      "fixed_in": "0.16.0",
+      "last_affected": null,
+      "affects_latest_release": false,
+      "published": "2026-06-17",
+      "url": "https://osv.dev/vulnerability/GHSA-99f9-j8r3-p853"
+     },
+     {
+      "id": "GHSA-mv8x-fg99-32mf",
+      "status": "fixed",
+      "affected": "< 0.18.0",
+      "reach": "network, no login, no user action, high complexity",
+      "impact_cia": "low/low/low",
+      "cve": "CVE-2026-10222",
+      "cwe": [
+       "CWE-74"
+      ],
+      "category": "CWE-74 (Injection)",
+      "severity": "LOW",
+      "cvss_vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:L",
+      "access_and_impact": "attack vector network; complexity high; privileges required none; user interaction none; confidentiality impact low; integrity impact low; availability impact low",
+      "fixed_in": "0.18.0",
+      "last_affected": null,
+      "affects_latest_release": false,
+      "published": "2026-06-01",
+      "url": "https://osv.dev/vulnerability/GHSA-mv8x-fg99-32mf"
+     },
+     {
+      "id": "GHSA-pmqc-57g8-c22c",
+      "status": "no_fix_named_latest_beyond_range",
+      "affected": "<= 0.19.0",
+      "reach": "network, no login, no user action, low complexity",
+      "impact_cia": "none/none/low",
+      "cve": "CVE-2026-10224",
+      "cwe": [
+       "CWE-400"
+      ],
+      "category": "CWE-400 (Uncontrolled Resource Consumption)",
+      "severity": "MODERATE",
+      "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+      "access_and_impact": "attack vector network; complexity low; privileges required none; user interaction none; confidentiality impact none; integrity impact none; availability impact low",
+      "fixed_in": null,
+      "last_affected": "0.19.0",
+      "affects_latest_release": false,
+      "published": "2026-06-01",
+      "url": "https://osv.dev/vulnerability/GHSA-pmqc-57g8-c22c"
+     },
+     {
+      "id": "GHSA-xq8w-9jvx-gm3v",
+      "status": "no_fix_named_latest_beyond_range",
+      "affected": "<= 0.19.0",
+      "reach": "network, no login, no user action, low complexity",
+      "impact_cia": "low/low/low",
+      "cve": "CVE-2026-10221",
+      "cwe": [
+       "CWE-74"
+      ],
+      "category": "CWE-74 (Injection)",
+      "severity": "MODERATE",
+      "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+      "access_and_impact": "attack vector network; complexity low; privileges required none; user interaction none; confidentiality impact low; integrity impact low; availability impact low",
+      "fixed_in": null,
+      "last_affected": "0.19.0",
+      "affects_latest_release": false,
+      "published": "2026-06-01",
+      "url": "https://osv.dev/vulnerability/GHSA-xq8w-9jvx-gm3v"
+     }
+    ]
+   },
+   "threat_picture": {
+    "nvd_cves_published": [
+     {
+      "keyword": "prompt injection",
+      "windows": [
+       {
+        "start": "2026-10-05",
+        "end": "2026-11-04",
+        "count": 25,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=prompt%20injection&pubStartDate=2026-10-05T00:00:00.000Z&pubEndDate=2026-11-04T00:00:00.000Z&resultsPerPage=1"
+       },
+       {
+        "start": "2026-09-05",
+        "end": "2026-10-05",
+        "count": 10,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=prompt%20injection&pubStartDate=2026-09-05T00:00:00.000Z&pubEndDate=2026-10-05T00:00:00.000Z&resultsPerPage=1"
+       },
+       {
+        "start": "2026-08-06",
+        "end": "2026-09-05",
+        "count": 24,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=prompt%20injection&pubStartDate=2026-08-06T00:00:00.000Z&pubEndDate=2026-09-05T00:00:00.000Z&resultsPerPage=1"
+       }
+      ],
+      "change_pct_vs_previous_window": 150
+     },
+     {
+      "keyword": "LLM",
+      "windows": [
+       {
+        "start": "2026-10-05",
+        "end": "2026-11-04",
+        "count": 40,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=LLM&pubStartDate=2026-10-05T00:00:00.000Z&pubEndDate=2026-11-04T00:00:00.000Z&resultsPerPage=1"
+       },
+       {
+        "start": "2026-09-05",
+        "end": "2026-10-05",
+        "count": 18,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=LLM&pubStartDate=2026-09-05T00:00:00.000Z&pubEndDate=2026-10-05T00:00:00.000Z&resultsPerPage=1"
+       },
+       {
+        "start": "2026-08-06",
+        "end": "2026-09-05",
+        "count": 33,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=LLM&pubStartDate=2026-08-06T00:00:00.000Z&pubEndDate=2026-09-05T00:00:00.000Z&resultsPerPage=1"
+       }
+      ],
+      "change_pct_vs_previous_window": 122
+     },
+     {
+      "keyword": "AI agent",
+      "windows": [
+       {
+        "start": "2026-10-05",
+        "end": "2026-11-04",
+        "count": 43,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=AI%20agent&pubStartDate=2026-10-05T00:00:00.000Z&pubEndDate=2026-11-04T00:00:00.000Z&resultsPerPage=1"
+       },
+       {
+        "start": "2026-09-05",
+        "end": "2026-10-05",
+        "count": 34,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=AI%20agent&pubStartDate=2026-09-05T00:00:00.000Z&pubEndDate=2026-10-05T00:00:00.000Z&resultsPerPage=1"
+       },
+       {
+        "start": "2026-08-06",
+        "end": "2026-09-05",
+        "count": 38,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=AI%20agent&pubStartDate=2026-08-06T00:00:00.000Z&pubEndDate=2026-09-05T00:00:00.000Z&resultsPerPage=1"
+       }
+      ],
+      "change_pct_vs_previous_window": 26
+     },
+     {
+      "keyword": "Model Context Protocol",
+      "windows": [
+       {
+        "start": "2026-10-05",
+        "end": "2026-11-04",
+        "count": 21,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=Model%20Context%20Protocol&pubStartDate=2026-10-05T00:00:00.000Z&pubEndDate=2026-11-04T00:00:00.000Z&resultsPerPage=1"
+       },
+       {
+        "start": "2026-09-05",
+        "end": "2026-10-05",
+        "count": 58,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=Model%20Context%20Protocol&pubStartDate=2026-09-05T00:00:00.000Z&pubEndDate=2026-10-05T00:00:00.000Z&resultsPerPage=1"
+       },
+       {
+        "start": "2026-08-06",
+        "end": "2026-09-05",
+        "count": 7,
+        "check_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=Model%20Context%20Protocol&pubStartDate=2026-08-06T00:00:00.000Z&pubEndDate=2026-09-05T00:00:00.000Z&resultsPerPage=1"
+       }
+      ],
+      "change_pct_vs_previous_window": -64
+     }
+    ],
+    "exploited_ai_software": {
+     "ai_entries_total": 12,
+     "kev_entries_total": 1767,
+     "ai_added_last_90_days": 3,
+     "ai_added_previous_90_days": 5,
+     "prompt_injection_entries": 0,
+     "most_recent": [
+      {
+       "cve": "CVE-2026-59822",
+       "vendor": "BerriAI",
+       "product": "LiteLLM",
+       "date_added": "2026-09-02",
+       "cwe": [
+        "CWE-287",
+        "CWE-306"
+       ],
+       "reference": "https://github.com/BerriAI/litellm/security/advisories/GHSA-7488-6r32-c95q",
+       "nvd": "https://nvd.nist.gov/vuln/detail/CVE-2026-59822"
+      },
+      {
+       "cve": "CVE-2026-64849",
+       "vendor": "MLflow",
+       "product": "MLflow",
+       "date_added": "2026-08-19",
+       "cwe": [
+        "CWE-918"
+       ],
+       "reference": "https://github.com/mlflow/mlflow/pull/24258",
+       "nvd": "https://nvd.nist.gov/vuln/detail/CVE-2026-64849"
+      },
+      {
+       "cve": "CVE-2025-62593",
+       "vendor": "Ray-Project",
+       "product": "Ray",
+       "date_added": "2026-08-17",
+       "cwe": [
+        "CWE-94",
+        "CWE-352"
+       ],
+       "reference": "https://github.com/ray-project/ray/security/advisories/GHSA-q279-jhrf-cc6v",
+       "nvd": "https://nvd.nist.gov/vuln/detail/CVE-2025-62593"
+      }
+     ],
+     "check_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    }
+   },
+   "findings": [
+    {
+     "id": "CVE-2026-120338",
+     "aliases": [],
+     "scope": "general",
+     "affected": [
+      "PrefectHQ prefab-ui: from 0.14.0 before 0.21.0"
+     ],
+     "cwe": [
+      "CWE-269",
+      "CWE-693",
+      "CWE-94"
+     ],
+     "cwe_names": {},
+     "severity": "CRITICAL",
+     "cvss": {
+      "version": "3.1",
+      "score": 10.0,
+      "severity": "CRITICAL"
+     },
+     "fixed_in": [],
+     "nvd_patch_reference": false,
+     "published": "2026-11-01T16:18:14+00:00",
+     "exploited": false,
+     "sources": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2026-120338",
+      "https://www.cve.org/CVERecord?id=CVE-2026-120338"
+     ],
+     "found_via": [
+      "NVD keyword 'LLM'"
+     ],
+     "paragraph": "CVE-2026-120338. Scope: general AI and agent software. Affected: PrefectHQ prefab-ui: from 0.14.0 before 0.21.0. Category: CWE-269 (Improper Privilege Management), CWE-693, CWE-94 (Code Injection). Severity: Critical, CVSS 3.1 base score 10.0. Exploitation: Not confirmed: not in CISA's Known Exploited Vulnerabilities catalogue at 2026-11-04T04:18:23+00:00. Patch: No fixed version stated in the source. Published: 2026-11-01. Found via: NVD keyword 'LLM'. Source: https://nvd.nist.gov/vuln/detail/CVE-2026-120338, https://www.cve.org/CVERecord?id=CVE-2026-120338."
+    }
+   ],
+   "text": null,
+   "sources_checked": [
+    {
+     "source": "hermes-agent pyproject.toml",
+     "status": "ok",
+     "dependencies": 45
+    },
+    {
+     "source": "OSV",
+     "status": "ok",
+     "packages_checked": 46
+    },
+    {
+     "source": "NVD",
+     "status": "ok",
+     "keywords_checked": 6,
+     "keywords_total": 6
+    },
+    {
+     "source": "CISA KEV",
+     "status": "ok",
+     "catalogue_version": "2026.11.03"
+    },
+    {
+     "source": "OSV hermes-agent advisories",
+     "status": "ok"
+    },
+    {
+     "source": "GitHub release tags",
+     "status": "ok"
+    },
+    {
+     "source": "PyPI",
+     "status": "ok"
+    },
+    {
+     "source": "NVD trend counts",
+     "status": "ok",
+     "counts_ok": 12,
+     "counts_total": 12
+    }
+   ],
+   "notes": []
+  }
+ ]
+}
