@@ -32,6 +32,10 @@ The first scheduled run at midnight generated the brief but could not push it: e
 
 The failed push also exposed a bug: a brief committed locally but not pushed was never published, because the next run saw "already exists" and stopped. `publish_brief.py` now pushes any local commits the remote doesn't have. The 2026-10-21 brief was then published by hand with Part 1 status `ok`, compared against 2026-10-20, which meets the last item in the definition of done.
 
+### New-model detection, corrected on 2026-11-04
+
+The 2026-11-04 brief, compared against 2026-10-22, reported 32 new models; 18 were already in the catalogue. Between the two snapshots the portal rewrote canonical slugs (`anthropic/claude-opus-5-20260723` became `anthropic/claude-opus-5`) and renamed some IDs (`voyageai/voyage-4` became `mongodb/voyage-4` with the slug unchanged). Part 1 keyed models on the slug alone, so every re-slugged model looked new, and Part 2 then featured `openai/gpt-6-astra` as a new model when it was not. Neither field is stable on its own, so a model now counts as new only when neither its ID nor its slug was in the previous snapshot. Re-run against the same two snapshots this gives 13 new models, each checked by hand. The published 2026-11-04 brief is left as it is, because nothing on the `briefs` branch is ever edited.
+
 ## The SPEC's open decisions
 
 ### 1. Reference usage volume: 10 million input and 2 million output tokens a month

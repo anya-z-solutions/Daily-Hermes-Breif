@@ -71,6 +71,26 @@ class Part1Test(unittest.TestCase):
         self.assertEqual(news[0]["id"], "acme/x")
         self.assertEqual(news[0]["prompt_per_1m"], 3.0)
 
+    def test_changed_canonical_slug_is_not_a_new_model(self):
+        # The portal rewrote canonical slugs between 2026-10-22 and 2026-11-04.
+        self.save_snapshot("2026-10-19", catalogue(*filler(5), model("acme/x", slug="acme/x-20260723"),
+                                                   model("acme/y:batch", slug="acme/y")))
+        result, _, _ = self.run_part1(catalogue(*filler(5), model("acme/x", slug="acme/x"),
+                                                model("acme/y:batch", slug="acme/y-20260810")))
+        self.assertEqual([c for c in result["changes"] if c["type"] == "new_model"], [])
+
+    def test_renamed_id_with_same_slug_is_not_a_new_model(self):
+        self.save_snapshot("2026-10-19", catalogue(*filler(5), model("voyageai/v4", slug="voyageai/v4-20260727")))
+        result, _, _ = self.run_part1(catalogue(*filler(5), model("mongodb/v4", slug="voyageai/v4-20260727")))
+        self.assertEqual([c for c in result["changes"] if c["type"] == "new_model"], [])
+
+    def test_base_and_variant_with_different_slugs_count_once(self):
+        self.save_snapshot("2026-10-19", catalogue(*filler(5)))
+        result, _, _ = self.run_part1(catalogue(*filler(5), model("acme/z", slug="acme/z"),
+                                                model("acme/z:batch", slug="acme/z-20261026")))
+        news = [c["id"] for c in result["changes"] if c["type"] == "new_model"]
+        self.assertEqual(news, ["acme/z"])
+
     def test_new_variant_of_existing_model_is_not_new(self):
         self.save_snapshot("2026-10-19", catalogue(*filler(5), model("acme/y")))
         result, _, _ = self.run_part1(catalogue(*filler(5), model("acme/y"), model("acme/y:batch")))

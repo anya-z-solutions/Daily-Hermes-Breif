@@ -34,9 +34,18 @@ PRICE_INCREASE_THRESHOLD = 0.20             # report increases above 20%
 # --- Helpers ---------------------------------------------------------------
 
 def base_key(model):
-    """Collapse :batch / :free variants onto one model for 'new model' detection."""
-    slug = model.get("canonical_slug") or model.get("id", "")
-    return slug.split(":")[0]
+    """Collapse :batch / :free variants onto one model for 'new model' detection.
+
+    Keyed on the ID. Neither field is stable on its own: in late October 2026 the portal rewrote
+    canonical slugs ('anthropic/claude-opus-5-20260723' became 'anthropic/claude-opus-5') and
+    renamed IDs ('voyageai/voyage-4' became 'mongodb/voyage-4', slug unchanged). So a model only
+    counts as new when neither its ID nor its canonical slug was in the previous snapshot.
+    """
+    return (model.get("id") or "").split(":")[0]
+
+
+def slug_key(model):
+    return (model.get("canonical_slug") or model.get("id") or "").split(":")[0]
 
 
 def is_variant(model_id):
@@ -80,6 +89,7 @@ def parse_model(raw):
         "id": model_id,
         "name": raw.get("name"),
         "base_key": base_key(raw),
+        "slug_key": slug_key(raw),
         "prompt": prompt,
         "completion": completion,
         "discounted": isinstance(original, dict),
@@ -173,14 +183,15 @@ def diff_catalogues(old, new):
 
     # New models: keyed on base model, so :batch / :free variants and ~aliases don't count.
     old_bases = {m["base_key"] for m in old.values()}
+    old_slugs = {m["slug_key"] for m in old.values()}
     groups = {}
     for m in new.values():
         if is_alias(m["id"]):
             continue
         groups.setdefault(m["base_key"], []).append(m)
     for b in sorted(groups):
-        if b in old_bases:
-            continue
+        if b in old_bases or any(m["slug_key"] in old_slugs for m in groups[b]):
+            continue                          # existing model, renamed or re-slugged
         m = representative(groups[b])
         changes.append({
             "type": "new_model", "tier": "act", "id": m["id"], "name": m["name"],

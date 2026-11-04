@@ -48,7 +48,7 @@ Reported changes:
 | Discount ended (`pricing.original` disappears) | note |
 | Price increase above 20% on input or output price | note |
 
-Not reported: removed models (owner's decision), price changes on `:batch`/`:free`/`:US` variants (they follow their base model), floating `~vendor/x-latest` aliases (pointers to another model, never new models), a variant repeating its base model's expiry change, cosmetic fields. A new model is reported under its base ID, never a variant.
+Not reported: removed models (owner's decision), price changes on `:batch`/`:free`/`:US` variants (they follow their base model), floating `~vendor/x-latest` aliases (pointers to another model, never new models), a variant repeating its base model's expiry change, cosmetic fields. A new model is reported under its base ID, never a variant. A model counts as new only when neither its ID (variant suffix removed) nor its canonical slug was in the previous snapshot, because the portal rewrites slugs and renames IDs.
 
 Every night Part 1 also includes an **expiry roll call**: every model with a non-null `expiration_date`, ID and date only, no interpretation.
 
