@@ -20,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import gmail_digest as gd  # noqa: E402
 
 NOW = dt.datetime(2026, 10, 20, 0, 0, tzinfo=dt.timezone.utc)
-ME = "anya.test@gmail.com"
+ME = "test.user@gmail.com"
 
 
 def internaldate(hours_ago):
@@ -154,7 +154,7 @@ class DigestTests(unittest.TestCase):
     def test_known_senders_file_and_gmail_dots(self):
         known = Path(self.tmp.name) / "known.txt"
         known.write_text("# clients\n@charity.org.uk\n", encoding="utf-8")
-        raw = make("Funding bid", frm="ceo@charity.org.uk", to="anyatest+work@gmail.com",
+        raw = make("Funding bid", frm="ceo@charity.org.uk", to="testuser+work@gmail.com",
                    plain="Can we talk about the bid?")
         email = self.run_digest([{"raw": raw, "date": internaldate(2)}],
                                 "--known-senders", str(known))["emails"][0]
@@ -229,7 +229,7 @@ class DigestTests(unittest.TestCase):
     def test_long_thread_trimmed(self):
         reply = "Thanks, agreed. " * 300
         history = "\n".join("> old line %d" % i for i in range(200))
-        plain = f"{reply}\n\nOn Mon, 19 Oct 2026 at 09:00, Anya <{ME}> wrote:\n{history}"
+        plain = f"{reply}\n\nOn Mon, 19 Oct 2026 at 09:00, Test User <{ME}> wrote:\n{history}"
         email = self.run_digest([{"raw": make("Re: plan", plain=plain),
                                   "date": internaldate(2)}])["emails"][0]
         self.assertNotIn("old line", email["body"])
