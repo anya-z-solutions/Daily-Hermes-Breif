@@ -7,6 +7,12 @@ on:
   schedule:
     - cron: "5 0 * * *"
   workflow_dispatch:          # adds a "Run workflow" button for a manual run
+    inputs:
+      mode:
+        description: "publish: write and publish tonight's brief. test: build it and show it here, publish nothing."
+        type: choice
+        options: [publish, test]
+        default: publish
 
 permissions:
   contents: write             # lets the run push to the briefs branch
@@ -31,7 +37,18 @@ jobs:
       - name: Run the tests
         run: python -m unittest discover -s tests
 
+      - name: Test run (builds the brief, publishes nothing)
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'test'
+        run: |
+          archive="$RUNNER_TEMP/archive"
+          mkdir -p "$archive"
+          if git fetch -q origin briefs; then git archive origin/briefs | tar -x -C "$archive"; fi
+          python daily_hermes_brief.py --archive "$archive" --dry-run > brief.md
+          cat brief.md >> "$GITHUB_STEP_SUMMARY"
+          echo "Test brief built: $(wc -w < brief.md) words. Nothing was published."
+
       - name: Publish tonight's brief
+        if: github.event_name == 'schedule' || inputs.mode == 'publish'
         run: |
           git config user.name "Daily Hermes Brief"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
