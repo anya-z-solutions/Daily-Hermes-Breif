@@ -1,0 +1,38 @@
+# Runs the Daily Hermes Brief every night and publishes it to the `briefs` branch.
+# Scheduled workflows run from the repository's default branch only, so this file
+# (and the code) must be on that branch. Times are UTC: 00:05 UTC is 00:05 or 01:05 in the UK.
+name: Nightly brief
+
+on:
+  schedule:
+    - cron: "5 0 * * *"
+  workflow_dispatch:          # adds a "Run workflow" button for a manual run
+
+permissions:
+  contents: write             # lets the run push to the briefs branch
+
+concurrency:
+  group: nightly-brief        # never two runs at once
+  cancel-in-progress: false
+
+jobs:
+  brief:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run the tests
+        run: python -m unittest discover -s tests
+
+      - name: Publish tonight's brief
+        run: |
+          git config user.name "Daily Hermes Brief"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          python publish_brief.py
